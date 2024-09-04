@@ -1,0 +1,247 @@
+---
+name: Variables
+rank: 8
+tagline: A variable is a binding between a name and a value.
+relatedLesson:
+  - this
+---
+
+import LessonDescription from "../../components/LessonDescription.astro";
+import StaticCodeContainer from "../../components/StaticCodeContainer.astro";
+import RelatedLesson from "../../components/RelatedLesson.astro";
+
+<LessonDescription name={frontmatter.name}>
+  A variable is a "named storage" for data. Whenever there's a need to store a 
+  piece of data, variables contain it, making it possible to use such data in the 
+  program elsewhere. Using variables also ensures code re-usability since it can 
+  be used to replace the same value in multiple places. 
+  In plain words, they are symbolic names for values in our application, no matter 
+  if their stocked information might change over time.
+</LessonDescription>
+
+## Table of Contents
+
+1. [1. Introduction](#1-introduction)
+2. [2. Primitive vs Object Binding](#2-primitive-vs-object-binding)
+3. [3. Redeclaring](#3-redeclaring)
+4. [4. undefined vs undeclared](#4-undefined-vs-undeclared)
+5. [5. Documentation](#5-documentation)
+6. [6. Related notes](#6-related-notes)
+
+---
+
+<div class="reference">
+
+  ## 1. Introduction 
+
+  A variable is a **binding** between a name and a value. A variable is:
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ **declared** when a `const`, `let` or `var` keyword is used with a name: `let myVar`
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ **initialized** when an initial value is assigned to it: `myVar = 1`
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ **reassigned** when its value changes: `myVar = 2`
+
+  Although you can declare and initialize a variable on the same line of code: 
+  `let myVar = 1`, the engine will declare and initialize it in 2 different steps. 
+
+  ---
+
+  ## 2. Primitive vs Object Binding
+
+  <div style="display: flex; justify-content: center;">
+    <img src="src/content/images/_arcade-metaphor.svg" alt="NES controller visual asset." width="200px" height="auto" align-items="center" />
+  </div>
+
+  **Metaphor time:**
+
+  Remember the old arcade era? Did you ever play consoles such as NES or old home computers 
+  like Atari? 
+  Whatever the case, imagine that you have a NES at home where you can play **Donkey Kong**. 
+  You are the owner of the console, the game belongs to you, and you set your own high score. 
+  Independently of the time it takes you to play again, your high score remains there. 
+
+  However, imagine there is also an arcade place nearby home. You do know the address, but 
+  nothing there belongs to you. You visit such an amazing space, play **Donkey Kong**, and get 
+  the high score. Some days later, however, your name doesn't appear anymore, as several 
+  other players beat your marks. 
+
+  A **primitive binding** is similar to owning your own copy of **Donkey Kong** at home, which 
+  means that only you can set the high score. An **object binding**, however, is the arcade machine: 
+  you don't own it, and you only know the address of the place. Although you can set a high score, 
+  so can others.
+
+  ---
+
+  Now, let's remember that **JavaScript has 8 types**:
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ `null`
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ `undefined`
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ `boolean`
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ `string`
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ `number`
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ `bigint`
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ `symbol`
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ `object`
+
+  All of them are primitives except for `object`. 
+
+  <div class="table-container">
+  | Example       | Explanation                                                                                                                                                                              |
+  | ------------  | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+  | **Primitive** | When you assign a **primitive** to a variable, `let myVar = 1`, the value `1` is bound to the name `myVar`.                                                                              |
+  | **Object**    | When you assign an **object** to a variable, `let myVar = { a: 1 }`, the value isn't bound to myVar. Instead, an object reference is bound to `myVar`. The memory address of `{ a: 1 }`. |
+  </div>
+
+  <div style="display: flex; justify-content: center;">
+    <img src="src/content/images/_object-reference.svg" alt="Example of object reference." width="500px" height="auto" align-items="center" />
+  </div>
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ **Example 1**. When assigning or passing variables of a primitive, a copy 
+  of the value is created.
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ **Example 2**. When assigning or passing variables of an object, a copy of 
+  the reference is created. If 2 variables are assigned the same object, changing the value of one will 
+  change the other:
+
+  <StaticCodeContainer>
+
+  ```js
+  example1.js
+  -----------
+  // Primitive binding.
+
+  var var1 = 1
+  var var2 = var1
+  var var3 = var1
+
+  var2++
+  console.log(var3)
+
+  // Output: 1
+  ```
+
+  ---
+
+  ```js
+  example2.js
+  -----------
+  // Object binding.
+
+  var var1 = { a: 1 }
+  var var2 = var1
+  var var3 = var1
+
+  var2.a++
+  console.log(var3)
+
+  // Output: { a: 1 }
+  ```
+
+  </StaticCodeContainer>
+
+  **Note**: When comparing objects using the equality opertor, `===`, the results can be unintuitive. 
+  See [Referential Equality](/reference) for details. 
+
+  ---
+
+  ## 3. Redeclaring 
+  
+  Do you remember our dear [scopes](/scopes)? Taking this into account, you can redeclare a variable 
+  declared with `var` statement in the same scope or inner-outer scopes, as these variables are **global**.
+
+  However, when it comes to the variables declared with `let` and `const`, you can't redeclare these statements 
+  in the same scope - but you can do so in inner scopes, as variables with `let` and `const` are **block scope**:
+
+  <StaticCodeContainer>
+
+  ```js
+  index.js
+  --------
+  // Redeclaration with var.
+  
+  var pepper = "🌶️";
+
+  console.log(pepper); // 🌶️
+
+  // Inner Scope,
+  {
+    var pepper = "🥦";
+
+    console.log(pepper); // 🥦
+  }
+
+  console.log(pepper); // 🥦
+  ```
+
+  ---
+
+  ```js
+  index.js
+  --------
+  // Redeclaration with let.
+
+  let eggplant = "🍆";
+
+  let eggplant = "🥔"; 
+  
+  // Output: SyntaxError
+  ```
+
+  ---
+
+  ```js
+  index.js
+  --------
+  /* Redeclaration in inner scopes, as let and const are
+  block scope and don't affect the outer scopes. */
+
+  const carrot = "🥕";
+
+  // Block Scope.
+  {
+    const carrot = "🍒";
+
+    console.log(carrot); // 🍒
+  }
+
+  console.log(carrot); // 🥕
+  ```
+
+  </StaticCodeContainer>
+
+  ---
+
+  ## 4. undefined vs undeclared
+
+  `undefined` is the default value of a variable or property. If we simply write `let myVar` and then 
+  `console.log(myVar)`, that's the result we will have. 
+
+  Considering this, attempting to access a variable that hasn't been declared throws a **reference error**. 
+  Although the error states `myVar` is not defined, a more accurate description is `myVar` is **undeclared**.
+
+  ---
+
+  ## 5. Documentation
+
+  Don't hesitate to visit the following sections to get more information about types, variables, and scopes: 
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ [JavaScripted: Types](/types) 
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ [JavaScripted: Scopes](/scopes) 
+
+  Also, keep in mind that [The Modern JavaScript site](https://javascript.info/variables) has plenty of examples 
+  you might find useful when getting started with the fundamentals.
+
+  ## 6. Related notes
+
+  <RelatedLesson relatedLesson={frontmatter.relatedLesson} />
+
+</div>
