@@ -1,0 +1,262 @@
+---
+name: Hoisting
+rank: 5
+tagline: Hoisting is a behavior in which a function or a variable can be used before declaration.
+relatedLesson:
+  - scopes
+---
+
+import LessonDescription from "../../components/LessonDescription.astro";
+import StaticCodeContainer from "../../components/StaticCodeContainer.astro";
+import RelatedLesson from "../../components/RelatedLesson.astro";
+
+<LessonDescription name={frontmatter.name}>
+  Hoisting is the default behavior in JavaScript where variable and function 
+  declarations are moved to the top of their respective scopes during the 
+  compilation phase (aka before executing the code). This guarantees that 
+  regardless of where these declarations appear within a scope, they can be 
+  accessed throughout that scope, aiding in more flexible coding practices and 
+  avoiding “undefined” errors during execution.
+</LessonDescription> 
+
+## Table of Contents
+
+1. [1. Introduction](#1-introduction)
+2. [2. function](#2-function)
+3. [3. var](#3-var)
+4. [4. const, let and class](#4-const-let-and-class)
+    - [- TDZ](#tdz)
+5. [5. Documentation](#5-documentation)
+6. [6. Related notes](#6-related-notes)
+
+---
+
+<div class="reference">
+
+  ## 1. Introduction
+
+  **Note**: If you are unfamiliar with the terminology below, check out:
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ [JavaScript Variables](/variables)
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ [JavaScript Scopes](/scopes)
+
+  ---
+
+  An **identifier** is a sequence of characters in the code that identifies a `variable`, 
+  `function`, or `property`. Let's see an example: the `myVar` string in `var myVar = 1`. 
+  Every time the compiler enters a scope, it starts registering declarations. Each 
+  identifier will be moved to the top of a scope. This is known as `hoisting`. What scope 
+  the identifier moves to the top of depends on the type of declaration:
+  
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ `function`,
+  
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ `var` or
+  
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ `let`, `const` and `class`. 
+
+  <div style="display: flex; justify-content: center; padding-top: 1rem;">
+    <img src="src/content/images/_library-metaphor.svg" alt="Pile of books and coffee on top visual asset." width="150px" height="auto" align-items="center" />
+  </div>
+
+  **Metaphor time:**
+
+  Imagine you're working in a messy library. Books are literally everywhere and you can put them wherever 
+  you want. However, when a real professional joins the team, they move everything and place narrative books 
+  on a certain shelf, poetry ones on a different one, and so on.
+
+  Your messy (and clearly unprofessional) library is the scope, all kinds of books are identifiers, 
+  and the **real** professional is the compiler. While coding, we can put identifiers wherever we want in the 
+  scope, but when the compiler enters the scope, it moves them to their right place.
+
+  That's hoisting.
+
+  ---
+
+  ## 2. function
+
+  A `function`-declared identifier will move to the top of the nearest `block scope`. If none is available, 
+  the nearest parent scope. It will also be initialized to its associated function reference and can 
+  be used. Below is an example of calling a function before it is declared. It works because it is 
+  hoisted to the top of the global scope by the compiler before `line: 1` is executed.
+
+  <StaticCodeContainer>
+
+  ```js
+  index.js
+  --------
+  hoisted(); // Output: "This function has been hoisted."
+
+  function hoisted() {
+    console.log('This function has been hoisted.');
+  };
+
+  /* Now, we can see why JavaScript enables us to 
+  invoke a function seemingly before declaring it. */
+  ```
+
+  ---
+
+  ```js
+  index.js
+  -------- 
+  /* However, function expressions are not 
+  hoisted: */
+
+  expression(); // Output: "TypeError: expression is not a function"
+
+  var expression = function() {
+    console.log('Will this work?');
+  };
+  ```
+
+  </StaticCodeContainer>
+
+  Given the examples, remember that hoisting completely to the top only applies to formal functions 
+  (functions declared with the function keyword), not function expressions like:
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ `const func = () => { .. }` or
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ `const func = function() { .. }`
+
+  ---
+
+  ## 3. var 
+
+  A `var`-declared identifier will move the top of the nearest **function scope**. If none is available, then global 
+  or module scope. It will also be initialized to its default value of `undefined` and can be used. Even if you declare 
+  and initialize the variable on the same line, `var myVar = 1`, only the identifier is hoisted. The variable will be 
+  initialized to its correct value when the line of code is executed. 
+
+  <div style="display: flex; justify-content: center;">
+    <img src="src/content/images/_var-hoisting.svg" alt="Examples of var hoisting." width="600px" height="auto" align-items="center" />
+  </div>
+
+  <StaticCodeContainer>
+
+  ```js
+  index.js
+  --------
+  console.log(myVar)
+  var myVar = 1;
+  console.log(myVar) 
+
+  // Output: undefined
+  // 1
+  ```
+
+  ---
+
+  ```js
+  index.js
+  -------- 
+  /* Below is an example of a variable declared 
+  and initialized in a block scope. Because it's 
+  declared as a var, it is hoisted to the 
+  function scope: */
+
+  function myFunc(x) {
+    if (x === 1) {
+        var y = 1
+    }
+
+  console.log(y)
+  }
+
+  myFunc(1)
+
+  // Output: 1
+  ```
+
+  </StaticCodeContainer>
+
+  ---
+
+  ## 4. const, let and class
+
+  A `const`, `let` or `class`-declared identifier will move the top of the nearest **block scope**. If none 
+  available, the nearest parent scope. It will also be initialized to its default value of `uninitialized`. 
+  It will remain uninitialized until the compiler executes the line where is it declared. Attempting to 
+  use it before then results in an error.
+
+  That's closely related to TDZ, as we'll see below.
+
+  ### TDZ
+
+  If we attempt to write:
+
+  ```js
+  console.log(myVar) 
+  let myVar = 1;
+  ```
+
+  we'll receive the following error: **"Uncaught ReferenceError: Cannot access 'myVar' before initialization"**. 
+  Why is that happening?
+
+  The above is an example of **The Temporal Dead Zone**. A window of time where a variable is declared but uninitialized. 
+  When a `var` is hoisted, it is initialized with a default value of `undefined`, so it has a TDZ of 0 in length and 
+  unobservable. `let`, `const` and `class` have an observable TDZ:
+
+  <div style="display: flex; justify-content: center;">
+    <img src="src/content/images/_tdz-example.svg" alt="Examples of TDZ." width="500px" height="auto" align-items="center" />
+  </div>
+
+  TDZ errors can be avoided by always putting `let`, `const` and `class` declarations at the top of their scope. This 
+  shrinks the TDZ to 0 length. If the declaration isn't needed from the beginning, create an inner block scope: 
+
+  <StaticCodeContainer>
+
+  ```js
+  badexample.js
+  -------------
+  // Don't do this:
+
+    function add1IfEven(x) {
+    if (!x) {
+        throw new Error("Input required")
+    }
+
+    const isEven = x%2 === 0
+    return isEven ? x + 1 : x
+  }
+  ```
+
+  ---
+
+  ```js
+  goodexample.js
+  --------------
+  // Instead, do this:
+
+  function add1IfEven(x) {
+    if (!x) {
+      throw new Error("Input required")
+    }
+
+    {
+      const isEven = x%2 === 0
+      return isEven ? x + 1 : x
+    }
+  }
+  ```
+
+  </StaticCodeContainer>
+
+  Also, keep in mind that **rules of scope**, such as **hoisting**, are applied per scope instance. During execution, 
+  each time a scope is entered, everything resets. This is why using a `const` within a loop doesn't throw an already 
+  declared error after the 1st iteration.
+
+  ---
+
+
+  ## 5. Documentation
+
+  Do you want to know more about **scopes and closures**? Here, you'll find a [dedicated "You don't know JavaScript" chapter for it](https://github.com/getify/You-Dont-Know-JS/blob/2nd-ed/scope-closures/README.md).
+
+  ---
+
+  ## 6. Related notes
+
+  <RelatedLesson relatedLesson={frontmatter.relatedLesson} />
+
+</div>
