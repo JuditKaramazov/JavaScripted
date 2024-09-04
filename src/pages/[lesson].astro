@@ -29,7 +29,7 @@ const ogImage = new URL(`/meta/${name.toLowerCase()}.png`, Astro.url);
 
 // To be tested and properly implemented.
 const installSnippet = experimental
-  ? `npm i @JuditKaramazov/JavaScripted`
+  ? `@JuditKaramazov/JavaScripted`
   : `https://github.com/getify/You-Dont-Know-JS`;
 
 const lessonsMarquee = lessons.slice(0, 25);
@@ -45,7 +45,7 @@ const lessonsMarquee = lessons.slice(0, 25);
     <section>
       <a href="/" class="logo-javascripted logo image">
         <img
-          src="/img/javascripted-logo.svg"
+          src="/img/icons/javascripted-logo.svg"
           width="546"
           height="80"
           alt="JavaScripted logo"
