@@ -1,0 +1,17 @@
+.lessons-grid {
+  max-width: 980px;
+  margin: 2rem auto;
+}
+
+.lessons-controls {
+  display: flex;
+  justify-content: flex-end;
+  padding: 1rem var(--body-padding);
+}
+
+.lessons-list {
+  display: grid;
+  align-items: stretch;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.6rem;
+}
