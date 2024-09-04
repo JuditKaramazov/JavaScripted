@@ -9,7 +9,7 @@ function insertCallouts(arr, callouts) {
   const middleIndex = Math.floor(newArr.length / 2);
 
   newArr.unshift(callouts[0]);
-  newArr.splice(middleIndex + 3, 0, callouts[1]);
+  newArr.splice(middleIndex + 2, 0, callouts[1]);
   newArr.push(callouts[2]);
 
   return newArr;
@@ -56,21 +56,21 @@ export default function LessonsList({ lessons }) {
     },
     {
       id: "Callout 2",
-      image: "poison",
-      imageWidth: "240",
-      imageHeight: "186",
-      imageAlt: "Poison bottle, cartoonish style.",
-      pitch: "Part of the poisonous Pythomazov",
-      link: "https://pythomazov.tech",
-    },
-    {
-      id: "Callout 3",
       image: "buymeacoffee",
       imageWidth: "100",
       imageHeight: "206",
       imageAlt: "Buymeacoffee original logo.",
       pitch: "Are you enjoying the content? It's for fun - and profit, too!",
       link: "https://www.buymeacoffee.com/juditkaramazov",
+    },
+    {
+      id: "Callout 3",
+      image: "poison",
+      imageWidth: "240",
+      imageHeight: "186",
+      imageAlt: "Poison bottle, cartoonish style.",
+      pitch: "Part of the poisonous Pythomazov",
+      link: "https://pythomazov.tech",
     }
   ]);
 
