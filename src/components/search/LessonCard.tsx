@@ -10,7 +10,7 @@ export default function LessonCard({
   return (
     <li className={styles.lesson}>
       <a href={`/${name.toLowerCase()}`}>
-        <h3 className={styles["card-title"]}>{name}</h3>
+        <h1 className={styles["card-title"]}>{name}</h1>
         <p className={styles["card-description"]}>{tagline}</p>
         <svg
           xmlns="http://www.w3.org/2000/svg"
