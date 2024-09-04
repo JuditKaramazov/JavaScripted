@@ -1,0 +1,86 @@
+---
+import Button from "./Button.astro";
+const { name } = Astro.props;
+---
+
+<div class="description">
+  <div>
+    <h2>Description:</h2>
+    <slot />
+  </div>
+  <aside class="callout">
+    <img
+      src="/img/codewars-logo.svg"
+      width="464"
+      height="85"
+      class="logo"
+      alt="Codewars logo."
+    />
+    <p>
+      Want to learn how to use {name} in a funny, 
+      interactive way? Check out <a
+      href="https://www.codewars.com">Codewars</a
+      >, and master the language through code katas!
+    </p>
+    <Button
+      text="Learn More"
+      size="small"
+      href="https://docs.codewars.com"
+      type="link"
+      class="get-started"
+    />
+  </aside>
+</div>
+
+<style>
+  .description {
+    --callout-width: 300px;
+    display: grid;
+    font-size: clamp(1.1rem, 2.2vw, 1.3rem);
+    gap: 1.5rem 2rem;
+  }
+
+  @media screen and (min-width: 811px) {
+    .description {
+      grid-template-columns: 1fr var(--callout-width);
+    }
+  }
+
+  .callout {
+    display: flex;
+    flex-direction: column;
+    margin: 1rem 0 1.5rem;
+    align-items: center;
+    align-self: start;
+    border: var(--border-dark);
+    border-color: var(--coal);
+    border-radius: 0.5rem;
+    color: var(--white);
+    font-size: clamp(0.9rem, 2vw, 1.1rem);
+    gap: 1rem;
+    padding: 1.5rem;
+    padding-bottom: 0;
+    text-align: center;
+    text-decoration: none;
+    transition: all 200ms ease-in-out;
+  }
+
+  .callout img.logo {
+    max-width: 250px;
+  }
+
+  .callout .button {
+    transform: translateY(50%);
+  }
+
+  .callout p {
+    max-width: 40ch;
+  }
+
+  @media screen and (min-width: 811px) {
+    .callout {
+      max-width: var(--callout-width);
+      margin-bottom: 0;
+    }
+  }
+</style>
