@@ -1,0 +1,122 @@
+---
+import { getEntry } from "astro:content";
+
+const { relatedLesson: relatedSlugs } = Astro.props;
+
+const relatedLessons = await Promise.all(
+  relatedSlugs.map(async (slug) => {
+    const relatedLesson = await getEntry("lessons", slug);
+    return {
+      slug: relatedLesson.slug,
+      name: relatedLesson.data.name,
+      tagline: relatedLesson.data.tagline,
+    };
+  })
+);
+
+const colors = ["var(--pink)", "var(--blue)", "var(--yellow)"];
+---
+
+<ul class="related-lessons">
+  {relatedLessons.map((lesson, index) => (
+    <li key={lesson.slug} class="relatedCard">
+      <div
+        class="blobShape"
+        style={{ backgroundColor: colors[index % colors.length] }}
+      ></div>
+      <a href={`/${lesson.slug}`} class="card-content">
+        <h3>{lesson.name}</h3>
+        <p>{lesson.tagline}</p>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="arrow"
+          viewBox="0 0 36 24"
+        >
+          <path
+            fill="none"
+            stroke="var(--yellow)"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M1.86 12h30.18M21.31 1.15 34.14 12 21.31 22.85"
+          />
+        </svg>
+      </a>
+    </li>
+  ))}
+</ul>
+
+<style>
+    .related-lessons {
+        display: grid;
+        max-width: 900px;
+        margin: 2rem auto;
+        gap: 1.6rem;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        list-style-type: none;
+        padding: 1rem;
+    }
+
+    .relatedCard {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        background-color: var(--coal);
+        border: 1px solid var(--yellow);
+        border-radius: 1rem;
+        overflow: hidden;
+        padding: 2rem 1rem 2rem 1rem;
+        transition: all 200ms ease-in-out;
+    }
+
+    .relatedCard:hover {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        transform: scale(1.03);
+    }
+
+    .blobShape {
+        position: absolute;
+        width: 100%;
+        height: 4rem;
+        top: 0;
+        left: 0;
+        background: var(--pink);
+        clip-path: polygon(0% 100%, 0% 0%, 100% 0%, 100% 100%, 75% 90%, 50% 100%, 25% 90%);
+        transition: all 0.3s ease;
+        z-index: 1;
+    }
+
+    .card-content {
+        margin-top: 4rem; 
+        margin-bottom: 2rem;
+        color: inherit;
+        font-size: clamp(1rem, 2vw, 1.3rem);
+        text-align: center;
+        text-decoration: none;
+        z-index: 2;
+    }
+
+    .card-content h3 {
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .card-content p {
+        margin: 0.5rem 0 0;
+        font-size: 0.9rem;
+        padding-bottom: 1rem;
+    }
+
+    .arrow {
+        position: absolute;
+        width: 28px;
+        margin-top: 30px;
+        bottom: 1rem;
+        right: 10%;
+        transition: all 200ms ease-in-out;
+    }
+
+    :global(a:hover) .arrow {
+        transform: translateX(0.6rem);
+    }
+</style>
