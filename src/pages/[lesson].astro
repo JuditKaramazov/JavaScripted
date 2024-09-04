@@ -1,0 +1,296 @@
+---
+import { CollectionEntry, getCollection } from "astro:content";
+import Layout from "../layouts/Layout.astro";
+import NavInternal from "../sections/NavInternal.astro";
+import Footer from "../sections/Footer.astro";
+import Install from "../components/Install.astro";
+import LessonsList from "../components/search/LessonsList";
+
+export async function getStaticPaths() {
+  const lessons = await getCollection("lessons");
+
+  return lessons.map((lesson) => {
+    return {
+      params: {
+        lesson: lesson.slug,
+      },
+      props: {
+        lesson,
+        lessons,
+      },
+    };
+  });
+}
+
+const { lesson, lessons } = Astro.props;
+const { Content } = await lesson.render();
+const { name, tagline, experimental } = lesson.data;
+const ogImage = new URL(`/meta/${name.toLowerCase()}.png`, Astro.url);
+
+// To be tested and properly implemented.
+const installSnippet = experimental
+  ? `npm i @JuditKaramazov/JavaScripted`
+  : `https://github.com/getify/You-Dont-Know-JS`;
+
+const lessonsMarquee = lessons.slice(0, 25);
+---
+
+<Layout
+  title={`${name} JavaScripting y'all`}
+  description={tagline}
+  ogImage={ogImage}
+  >
+  <NavInternal />
+  <main>
+    <section>
+      <a href="/" class="logo-javascripted logo image">
+        <img
+          src="/img/javascripted-logo.svg"
+          width="546"
+          height="80"
+          alt="JavaScripted logo"
+          class="logo-javascripted"
+        />
+      </a>
+      <header>
+        <h1 class="title">{name}</h1>
+        <p class="tagline">{tagline}</p>
+      </header>
+      <div>
+        <h2>Essential:</h2>
+        {
+          experimental && (
+            <p class="experimental">
+              Still working on this matter. Stay tuned!
+            </p>
+          )
+        }
+        <Install text={installSnippet} />
+      </div>
+      <Content />
+    </section>
+    <div class="mt-12">
+      <h2>All Notes:</h2>
+        <div class="marquee marquee-wrapper">
+          <ul class="marquee-content">
+            {lessonsMarquee.map(lesson => (
+              <li>
+                <a href={`/${lesson.slug}`} tabindex="-1">{lesson.data.name}</a>
+              </li>
+            ))}
+          </ul>
+          <ul class="marquee-content">
+            {lessonsMarquee.map(lesson => (
+              <li>
+                <a href={`/${lesson.slug}`} tabindex="-1">{lesson.data.name}</a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </main>
+  <Footer />
+
+  <style>
+    body {
+      min-height: 100lvh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    main {
+      width: 100%;
+      max-width: 980px;
+      margin: 4rem auto;
+    }
+
+    section {
+      padding: clamp(0.5rem, 4vw, 3rem);
+      padding-top: 0;
+      display: flex;
+      flex-direction: column;
+      gap: clamp(1.2rem, 6vw, 3rem);
+      background-color: var(--charcoal);
+      border-radius: 0.8rem;
+    }
+
+    header {
+      display: grid;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem 1rem;
+    }
+
+    .tagline {
+      max-width: 42ch;
+    }
+
+    .logo-javascripted {
+      width: 250px;
+      height: auto;
+      transform: translateY(-28%);
+    }
+
+    .title {
+      color: var(--blue);
+      text-transform: none;
+      font-family: var(--font-outfit);
+      font-size: clamp(1.6rem, 5vw, 2.6rem);
+      font-weight: 600;
+    }
+
+    .install,
+    .install code {
+      background-color: var(--coal);
+    }
+
+    .install .copy-btn:hover,
+    .install .copy-btn:focus-visible {
+      background-color: var(--charcoal);
+    }
+
+    main :global(h2) {
+      font-size: clamp(1rem, 2.2vw, 1.2rem);
+      margin-bottom: 1rem;
+    }
+
+    main :global(code) {
+      background-color: var(--coal);
+    }
+
+    .experimental {
+      font-size: 1.1rem;
+      font-style: italic;
+      margin-bottom: 1rem;
+    }
+
+    @media screen and (max-width: 500px) {
+      .experimental ~ .install {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    :global(.reference) {
+      font-size: clamp(1.1rem, 2.2vw, 1.3rem);
+    }
+
+    :global(.reference > * + *) {
+      margin-top: 1.5rem;
+    }
+
+    :global(.reference h3) {
+      font-size: clamp(0.9rem, 2vw, 1.1rem);
+    }
+
+    :global(.reference .table-container) {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      border: 0.07rem solid rgba(249, 244, 218, 0.1);
+    }
+
+    :global(.reference table) {
+      border-radius: 0.9rem;
+      font-size: clamp(1rem, 2.1vw, 1.2rem);
+    }
+
+    :global(.reference h3:not(:first-child)) {
+      margin-top: 2rem;
+    }
+
+    :global(.reference thead) {
+      /* border-bottom: 0.07rem solid rgba(249, 244, 218, 0.1); */
+      background-color: rgba(249, 244, 218, 0.1);
+      font-size: var(--font-sm);
+      text-align: left;
+    }
+
+    :global(.reference tr:not(:last-of-type)) {
+      border-bottom: 0.07rem solid rgba(249, 244, 218, 0.1);
+    }
+
+    :global(.reference td),
+    :global(.reference th) {
+      padding: 0.5rem 1.2rem 0.5rem 0.75rem;
+    }
+
+    :global(.reference td:not(:last-of-type)),
+    :global(.reference th:not(:last-of-type)) {
+      min-width: 10ch;
+    }
+
+    :global(.reference td:last-of-type),
+    :global(.reference th:last-of-type) {
+      width: 100%;
+      min-width: 300px;
+    }
+
+    :global(.sp-preview-container),
+    :global(.sp-preview-container iframe) {
+      background: var(--coal) !important;
+    }
+
+    :global(pre) {
+      overflow: auto;
+      width: 100%;
+      background-color: transparent !important;
+      padding: 2rem;
+      border-radius: 0.5rem;
+    }
+
+    :global(pre code) {
+      font-size: 1rem;
+      display: block;
+      font-family: "Fira Code", monospace;
+    }
+
+    .marquee {
+		--gap: 1rem;
+		padding: .7rem 0;
+		display: flex;
+		overflow: auto;
+		user-select: none;
+		gap: var(--gap);
+	}
+
+	.marquee-content {
+		flex-shrink: 0;
+		display: flex;
+		justify-content: space-around;
+		min-width: 100%;
+		gap: var(--gap);
+		animation: scroll 50s linear infinite;
+	}
+
+	@media (prefers-reduced-motion) {
+		.marquee-content {
+			animation: none;
+		}
+	}
+
+	.marquee-content li a {
+		padding: .3rem .6rem;
+		background-color: var(--white);
+		border-radius: .3rem;
+		border: var(--border-dark);
+		box-shadow: 0 .5rem 0 -.1rem var(--yellow),
+					0 .55rem 0 var(--charcoal);
+		color: var(--charcoal);
+		font-size: .9rem;
+	}
+
+	.marquee:hover .marquee-content {
+		animation-play-state: paused;
+	}
+
+	@keyframes scroll {
+		from {
+			transform: translateX(0);
+		}
+		to {
+			transform: translateX(calc(-100% - var(--gap)));
+		}
+	}
+  </style>
+</Layout>
