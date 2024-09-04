@@ -1,0 +1,303 @@
+---
+name: Scopes
+rank: 4
+tagline: Scope refers to the context in which variables are declared and can be accessed.
+sandboxId: rxpfnn
+previewHeight: 500px
+relatedLesson:
+  - hoisting
+---
+
+import CodePreview from "../../components/CodePreview.astro";
+import LessonDescription from "../../components/LessonDescription.astro";
+import StaticCodeContainer from "../../components/StaticCodeContainer.astro";
+import RelatedLesson from "../../components/RelatedLesson.astro";
+
+<LessonDescription name={frontmatter.name}>
+  **POLP** (also known as "Principle of Least Privilege") states components of a 
+  system should be designed to function with the least privilege, access, and exposure. 
+  This makes the overall system stronger from a security standpoint. A compromise 
+  or failure of 1 piece has a minimized impact on the rest of the system. Other 
+  benefits include avoiding naming collisions, unexpected behavior, and unintended 
+  dependencies. For each piece, default to exposing the minimum. Keep everything 
+  else private. **A scope enables control of a declaration's exposure**.
+</LessonDescription>
+
+## Table of Contents
+
+1. [1. Levels](#1-levels)
+2. [2. Arguments](#2-arguments)
+3. [3. Accessing Variables and functions](#3-accessing-variables-and-functions)
+4. [4. Global scope](#4-global-scope)
+    - [- IIFE](#iife)
+5. [5. Documentation](#5-documentation)
+6. [6. Related notes](#6-related-notes)
+
+---
+
+<div class="reference">
+  ## 1. Levels
+
+  In JavaScript, scopes are determined at compile time. This is known as **lexical 
+  scope**. Each scope can only access declaration within itself or in parent scopes. 
+  However, during compliation, declarations may move to a different scope. 
+  
+  There are 4 levels of scope:
+
+  <CodePreview
+    sandboxId={frontmatter.sandboxId}
+    previewHeight={frontmatter.previewHeight}
+  />
+
+  <div class="table-container">
+  | **Scope**     | **Description**                                                                                                                                                                                                                         |
+  | ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+  | Global        | If a .js file is being imported into a .html file, its outer most scope is the global scope. Although the function arguments are highlighted, they aren't included in the global scope. Details below.                                  |
+  | Module        | If the HTML tag importing the .js file has the module type attribute, <script type="module" src="index.js"></script>, its outer most scope is no longer the global scope, but a module scope.                                           |
+  | Function      | Both function and block scopes can be identified by looking where {} brackets start and end.                                                                                                                                            |
+  | Block         | Following POLP, tmp should be as hidden in scope as possible. Therefore, it is blocked scoped in an if statement. You could remove if (x > y) above & still have a block scope. Note: a switch statement does not define a block scope. |
+  </div>
+
+  <div style="display: flex; justify-content: center;">
+    <img src="src/content/images/_scope-arguments.svg" alt="Scope arguments." width="400px" height="auto" align-items="center" />
+  </div>
+
+  ---
+
+  ## 2. Arguments
+
+  Function and block scopes are between the `{}` brackets, which means a function's 
+  arguments aren't within a function's scope. They aren't in a function's parent 
+  scope either. When compiled, the location of arguments can be thought of as being 
+  in a new scope that wraps the function.
+
+  Let's see **two different examples** (1 and 2) before and after compile:
+
+  <StaticCodeContainer>
+
+  ```js
+  example1.js
+  -----------
+  // Before compile:
+
+  function myFunc(input) {
+   return input
+  }
+
+  myFunc(1)
+  
+
+  // After compile:
+
+  {
+    var input = 1
+
+    function myFunc() {
+      return input
+    }
+  }
+
+  myFunc(1)
+  ```
+
+  ---
+
+  ```js
+  example2.js
+  -----------
+  // Before compile:
+
+  const myArray = [...]
+
+  for (let i = 0; i < myArray.length; i++) {
+  ...
+  }
+  ...
+  
+
+  // After compile:
+
+  const myArray = [...]
+
+  {
+    let i = 0
+
+    for (; i < myArray.length; i++) {
+      ...
+    }
+  }
+
+  ...
+  ```
+
+  </StaticCodeContainer>
+
+  This is why `const` can't be used in a `for` loop. It needs to be re-assigned 
+  after the 1st iteration via `i++`.
+
+  ---
+
+  ## 3. Accessing Variables and functions
+
+  When a reference cannot be found within a scope, the parent scope is searched. If 
+  it still can't be found, the next parent scope is searched. This continues until 
+  the reference is found or there are no more scopes to search. At that point, a 
+  reference error will be thrown. Below is an example of a variable that is declared 
+  in the global scope but accessed from a function scope. The engine 1st searches the 
+  function scope for `myVar`. It can't find it, so it then searches the parent scope 
+  and finds the declaration.
+
+  <StaticCodeContainer>
+
+  ```js
+  index.js
+  --------
+
+  const myVar = 1
+
+  function myFunc() {
+  console.log(myVar)
+  }
+
+  myFunc()
+
+  /* Although it might seem 
+  obvious, the result displayed 
+  in the console is:
+  1
+  The engine indeed found the 
+  parent scope declaration. */ 
+  ```
+  </StaticCodeContainer>
+
+  ---
+
+  ## 4. Global Scope
+
+  The global scope is where:
+
+  ▪ JavaScript exposes:
+
+    ```text
+    - Primitives
+    - Natives
+    - Global functions: eval(), parseInt(), ...
+    - Namespaces: Math, JSON
+    - Intl, WebAssembly
+    ```
+
+  ▪ The environment hosting the JS engine exposes its own built-ins:
+
+    ```text
+    - console
+    - The DOM (window, document, ...)
+    - Timers (setTimeout(..), etc.)
+    - Web platform APIs: navigator, history, geolocation, WebRTC, etc.
+    ```
+
+  If the environment is the browser, a `var` or `function` declaration in the global scope 
+  will be added to the global object. This object is commonly accessed through `window`. 
+  However, it is better to use the standardized reference `globalThis` instead:
+
+  <StaticCodeContainer>
+
+  ```js
+  example1.js
+  -----------
+  function canMakeHTTPRequest() {
+    return typeof globalThis.XMLHttpRequest === 'function';
+  }
+
+  console.log(canMakeHTTPRequest());
+
+  // Expected output (in a browser): true
+  ```
+
+  ---
+
+  ```js
+  example2.js
+  -----------
+  globalThis.myGlobalVar = "Hello, World!";
+
+  function greet() {
+      console.log(globalThis.myGlobalVar);
+  }
+
+  greet(); 
+  
+  /* Outputs "Hello, World!" in any environment.
+  globalThis ensures that it's accessible no 
+  matter where the code runs. */ 
+  ```
+
+  </StaticCodeContainer>
+
+  ### IIFE
+
+  An application could include many global variables and functions from different source 
+  files. Limiting the number of these prevents problems like name collisions. One way to do 
+  this is to use an **IIFE (Immediately Invoked Function Expression)**. Commonly used for 
+  initiating code (code that runs as soon as the JavaScript loads), it is a function that:
+
+   &nbsp;&nbsp;&nbsp;&nbsp;▪ is invoked as soon as it is defined,
+
+   &nbsp;&nbsp;&nbsp;&nbsp;▪ doesn't pollute the global namespace, and 
+
+   &nbsp;&nbsp;&nbsp;&nbsp;▪ can't be invoked again.
+
+  <StaticCodeContainer>
+
+  ```js
+  example1.js
+  -----------
+  (function () {
+    // …
+  })();
+
+  (() => {
+    // …
+  })();
+
+  (async () => {
+    // …
+  })();
+  ```
+
+  ---
+
+  ```js
+  example2.js
+  -----------
+
+  // Executing an async function:
+
+  const getFileStream = async (url) => {
+    // implementation
+  };
+
+  (async () => {
+    const stream = await getFileStream("https://domain.name/path/file.ext");
+    for await (const chunk of stream) {
+      console.log({ chunk });
+    }
+  })();
+  ```
+
+  </StaticCodeContainer>
+
+  ---
+
+  ## 5. Documentation
+
+  If you are still curious about more sophisticated uses of the module pattern and other uses 
+  of IIFE, for instance, I would highly recommend the book 
+  [Learning JavaScript Design Patterns](https://patterns.addy.ie/) by Addy Osmani. 
+
+  ---
+
+  ## 6. Related notes
+
+  <RelatedLesson relatedLesson={frontmatter.relatedLesson} />
+
+</div>
