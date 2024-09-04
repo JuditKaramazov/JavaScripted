@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 340">
+  <defs>
+    <style>
+@keyframes rotate {
+    0%   { transform: rotateZ(0deg);   }
+    100% { transform: rotateZ(360deg); }
+}
+
+g {
+    transform-origin: center;
+    animation: rotate 5400ms infinite;
+}
+
+.big {
+    stroke: #fcba28;
+}
+
+.small {
+    fill: #fcba28;
+}
+
+    </style>
+  </defs>
+           <g>
+                <circle
+                    class="big"
+                    cx="170"
+                    cy="170"
+                    r="85"
+                    fill="none"
+                    strokeWidth="2"
+                />
+                <circle
+                    class="small"
+                    cx="170"
+                    cy="85"
+                    r="6"
+                />
+            </g>
+</svg>
