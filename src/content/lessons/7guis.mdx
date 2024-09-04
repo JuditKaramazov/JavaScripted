@@ -1,0 +1,33 @@
+---
+name: 7GUIs
+rank: 10
+tagline: 7GUIs is a programming benchmark to compare implementations in terms of their notation. 
+previewHeight: 300px
+---
+
+import CodePreview from "../../components/CodePreview.astro";
+import LessonDescription from "../../components/LessonDescription.astro";
+import StaticCodeContainer from "../../components/StaticCodeContainer.astro";
+
+<LessonDescription name={frontmatter.name}>
+  
+</LessonDescription>
+
+<div class="reference">
+  ## 1. Introduction
+
+  <div class="table-container">
+  | Name  | Type   | Description                           |
+  | ----- | ------ | ------------------------------------- |
+  | title | string | The title to be set for the document. |
+  </div>
+</div>
+
+<CodePreview
+  sandboxId={frontmatter.sandboxId}
+  previewHeight={frontmatter.previewHeight}
+/>
+
+<StaticCodeContainer>
+
+</StaticCodeContainer>
