@@ -21,14 +21,14 @@ export default function Callout({
     <li className={styles.callout}>
       <a href={link} className="logo image">
         <img
-          src={`/img/${image}.svg`}
+          src={`/img/icons/${image}.svg`}
           width={imageWidth}
           height={imageHeight}
           className={image}
           alt={imageAlt}
         />
         <img
-          src="/img/javascripted-logo.svg"
+          src="/img/icons/javascripted-logo.svg"
           width="464"
           height="85"
           className="logo"
