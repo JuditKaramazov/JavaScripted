@@ -1,0 +1,554 @@
+---
+name: Objects
+rank: 1
+tagline: An object is a built-in type in JavaScript made up of properties (string type) and values (any type).
+relatedLesson:
+  - classes
+  - reference
+---
+
+import LessonDescription from "../../components/LessonDescription.astro";
+import StaticCodeContainer from "../../components/StaticCodeContainer.astro";
+import RelatedLesson from "../../components/RelatedLesson.astro";
+
+<LessonDescription name={frontmatter.name}>
+  The Object type represents one of JavaScript's data types. It is used to store 
+  various keyed collections and more complex entities. Objects can be created 
+  using the Object() constructor or the object initializer / literal syntax. 
+  Nearly all objects in JavaScript are instances of Object; a typical object 
+  inherits properties (including methods) from Object.prototype, although these 
+  properties may be shadowed (a.k.a. overridden). The only objects that don't 
+  inherit from Object.prototype are those with null prototype, or descended from 
+  other null prototype objects.
+</LessonDescription>
+
+## Table of Contents
+
+1. [1. Creating](#1-creating)
+2. [2. Prototype Chain](#2-prototype-chain)
+3. [3. Setting a Property](#3-setting-a-property)
+4. [4. Getters and Setters](#4-getters-and-setters)
+5. [5. Inspecting](#5-inspecting)
+6. [6. Iterating](#6-iterating)
+7. [7. Cloning](#7-cloning)
+8. [8. Immutability](#8-immutability)
+    - [- Immutability: Deep Freeze](#immutability-deep-freeze)
+9. [9. Documentation](#9-documentation)
+10. [10. Related notes](#10-related-notes)
+
+---
+
+<div class="reference">
+  ## 1. Creating
+  An object can be created 4 different ways:
+
+  <StaticCodeContainer>
+
+  ```js
+  index.js
+  --------
+  // Prototype set to Object.prototype
+  const obj = {
+      a: 1
+  }
+  ```
+
+  ---
+
+  ```js
+  index.js
+  --------
+  function ObjConstructor(a) {
+      this.a = a
+  }
+
+  // Prototype set to the function ObjConstructor.
+  const obj = new ObjConstructor(1)
+  ```
+
+  ---
+
+  ```js
+  index.js
+  ---------
+  // Prototype set to the 1st argument.
+  const obj = Object.create(Object.prototype, {
+      a: {
+          value: 1,
+          enumerable: true,
+          writable: true,
+          configurable: true
+      }
+  })
+  ```
+
+  ---
+
+  ```js
+  index.js
+  ---------
+  // A class is a template for creating an object.
+  class Obj {
+      constructor(a) {
+          this.a = a
+      }
+  }
+
+  // Prototype set to the class Obj.
+  const obj = new Obj(1)
+  ```
+
+  </StaticCodeContainer>
+
+  <div class="table-container">
+  When a function is invoked with `new` in front of it (a constructor call):
+
+  |          | **Description**                                                                                                                                       |
+  |----------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
+  | 1        | A new object is created (either a user-defined object type or one of the built-in object types that have a constructor function).                     |
+  | 2        | The object is `[[Prototype]]` linked.                                                                                                                 |
+  | 3        | The object is set as the `this` binding for that function call.                                                                                       |
+  | 4        | Unless the function returns its own alternate object, the `new`-invoked function call will automatically return the newly constructed object.         |
+  </div>
+
+
+  ---
+
+  ## 2. Prototype Chain
+
+  When an object is created, a property, `[[Prototype]]`, is set on the object. It 
+  allows an object to access properties of other objects. You can see this by creating 
+  an object in the browser's console.
+
+  When you attempt to access an object property's value on an object, for example `obj.a`, 
+  the engine invokes an internal `[[Get]]` operation. The engine will:
+
+  <div class="table-container">
+  |          | **Description**                                                                                                                                                                                                                                                                                           |
+  |----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+  | 1        | Look for the property on the object.                                                                                                                                                                                                                                                                      |
+  | 2        | If it can't find it, it will then look for that property in the object that is referenced in the `[[Prototype]]` property.                                                                                                                                                                                |
+  | 3        | If the linked object doesn't have the property, the engine will check that object's linked object. This continues until the property is found or there are no more links. If no match is found, **undefined** is returned. This series of links between objects forms the **prototype chain**.            |
+  </div>
+  
+  ---
+
+  ## 3. Setting a Property
+
+
+  When you attempt to set a value, myObject.myProperty = 1, the engine invokes an internal 
+  `[[Put]]` operation. If the property is present, the operation will check:
+
+  <div class="table-container">
+  |          | **Description**                                                                                                                                       |
+  |----------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
+  | 1        | Is the property an __accessor descriptor__ (see "Getters and Setters" section below)? Call the setter.                                                |
+  | 2        | Is the property a __data descriptor__ with writable of **false**? Silently fail in non-strict mode, or throw TypeError in strict mode.                |
+  | 3        | Otherwise, set the value to the property.                                                                                                             |
+  </div>
+
+  A property on an object can be set in 3 different ways:
+
+  <StaticCodeContainer>
+
+  ```js
+  index.js
+  --------
+  // First way.
+  const obj = {
+    a: 1
+  }
+  ```
+
+  ---
+  
+  ```js
+  index.js
+  --------
+  // Second way.
+  const obj = {}
+  
+  Object.defineProperty(obj, 'a', {
+    value: 1,
+    enumerable: true, // Will it be visible when iterating?
+    writable: true, // Can the property be edited?
+    configurable: true // Can the property be deleted?
+    })
+  ```
+  ---
+
+  ```js
+  // The 3rd is through a setter (see below).
+  ```
+
+  </StaticCodeContainer>
+
+  Does it look difficult so far? Coffee break before continuing!
+
+  ---
+
+  ## 4. Getters and Setters
+
+  Getters and setters are properties that call hidden functions to retrieve and set values. 
+  When you define a property to have either a getter or a setter, its definition becomes an 
+  **accessor descriptor** (as opposed to a **data descriptor**).
+
+  For accessor-descriptors, the value and writable characteristics of the descriptor are ignored. 
+  Instead, the engine considers the set and get characteristics of the property (as well as 
+  configurable and enumerable).
+
+  <StaticCodeContainer>
+
+  ```js
+  index.js
+  --------
+  const obj = {
+	  get a() {
+		  return this._a_;
+	  },
+	  set a(val) {
+		  this._a_ = val * 2;
+	  }
+  };
+
+  obj.a = 2;
+  console.log(obj.a)
+
+  /* As we saw, the value is stored into a variable a. 
+  The underscores in the name is just a convention. */
+  ```
+
+  ---
+
+  ```js
+  index.js
+  --------
+  const obj = {};
+
+  Object.defineProperty(obj, "a",
+  {
+    get: function() {
+    return 1
+    },
+    enumerable: true
+    }
+  );
+
+  // Here, we got to see that a getter can be also be defined using a descriptor.
+  ```
+
+  </StaticCodeContainer>
+
+  Remember to visit [w3schools](https://www.w3schools.com/js/js_object_accessors.asp) in order to get some 
+  extra information.
+
+  ---
+
+  ## 5. Inspecting
+
+  To test if an object has a property, use:
+
+  <div class="table-container">
+  |          | Step                                                                           |
+  |----------|--------------------------------------------------------------------------------|
+  | 1        | `Object.hasOwn(..)` to exclude the `[[Prototype]]` chain.                      |
+  | 2        | `in` to include it.                                                            |
+  </div>
+
+  <StaticCodeContainer>
+
+  ```js
+  index.js
+  --------
+  const obj1 = {
+	a: 1
+  };
+
+  const obj2 = Object.create(obj1);
+  obj2.b = 2
+
+  console.log(Object.hasOwn(obj2, "a"))
+  console.log(Object.hasOwn(obj2, "b"))
+
+  console.log('---------')
+
+  console.log("a" in obj2)
+  console.log("b" in obj2)
+  ```
+
+  ---
+
+  ```js
+  // Output:
+  // false
+  // true
+  // ---------
+  // true
+  // true
+  ```
+
+  </StaticCodeContainer>
+
+  ---
+
+  ## 6. Iterating
+
+  <div style="display: flex; justify-content: center;">
+    <img src="src/content/images/_loop.svg" alt="Iteration loop." width="200px" height="auto" align-items="center" />
+  </div>
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ `for..in` iterates over the list of enumerable properties on an object (including its `[[Prototype]]` chain).
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ `for..of` with `Object.entries` doesn't include the `[[Prototype]]` chain.
+
+  <StaticCodeContainer>
+
+  ```js
+  index.js
+  --------
+  const obj1 = {
+    a: 1
+  };
+
+  const obj2 = Object.create(obj1);
+  obj2.b = 2
+
+  for (prop in obj2) {
+  console.log(`${prop}: ${obj2[prop]}`)
+  }
+
+  console.log('---------')
+
+  for (let [key, value] of Object.entries(obj2)) {
+  console.log(`${key}: ${value}`);
+  }
+  ```
+
+  ---
+
+  ```js
+  // Output:
+  // b: 2
+  // a: 1
+  // ---------
+  // b: 2
+  ```
+
+  </StaticCodeContainer>
+
+  When iterating over an object, order of iteration isn't guaranteed. If insertion order is required, use 
+  a [Map](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map) instead of 
+  an object:
+
+  <StaticCodeContainer>
+
+  ```js
+  index.js
+  --------
+  const map1 = new Map();
+
+  map1.set('a', 1);
+  map1.set('b', 2);
+  map1.set('c', 3);
+
+  console.log(map1.get('a'));
+  // Expected output: 1
+
+  map1.set('a', 97);
+
+  console.log(map1.get('a'));
+  // Expected output: 97
+
+  console.log(map1.size);
+  // Expected output: 3
+
+  map1.delete('b');
+
+  console.log(map1.size);
+  // Expected output: 2
+  ```
+  </StaticCodeContainer>
+
+  ---
+
+  ## 7. Cloning
+
+  An object can be cloned in 4 different ways:
+
+  <StaticCodeContainer>
+
+  ```js
+  index.js
+  --------
+  const obj = { a: 1 }
+
+  const copy1 = { ...obj }
+  const copy2 = Object.assign({}, obj)
+  const copy3 = JSON.parse(JSON.stringify(obj))
+  const copy4 = structuredClone(obj)
+
+  // The 1st 2 create a shallow copy. The last 2 create a deep copy. 
+  ```
+
+  ---
+
+  ```js
+  index.js
+  --------
+  // Shallow object.
+  const userDetails = {
+    name: "John Doe",
+    age: 14,
+    verified: false
+  };
+
+  // Deep object.
+  const userDetails = {
+    name: "John Doe",
+    age: 14,
+    status: {
+      verified: false,
+    }
+  };
+  ```
+
+  </StaticCodeContainer>
+
+  The difference is only relevant if an object property has a value of another object:
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ **shallow**: the reference is copied.
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ **deep**: the object is duplicated and a reference to this new object will be used as the value.
+
+  `{ ...obj }` and `structuredClone(..)` are the preferred ways to do a shallow and deep clone.
+
+  ![Shallow versus deep.](src/content/images/_shallow-deep.svg)
+
+   ---
+
+  ## 8. Immutability
+
+  `Object.freeze(..)` creates an immutable object: an object that can't be changed. It calls `Object.seal(..)`
+  on the passed in object and marks all _data accessor_ properties as writable: `false`. Their values can no 
+  longer be changed. This approach is the highest level of immutability that you can attain for an object.
+
+  <StaticCodeContainer>
+
+  ```js
+  index.js
+  --------
+  const obj = { a: 1 }
+  Object.freeze(obj)
+
+  // This will fail, as obj has been frozen.
+  obj.a = 2
+  console.log(obj) // Output: { a: 1 }
+  ```
+
+  ---
+
+  ```js
+  index.js
+  --------
+  const employee = {
+    name: "Mayank",
+    designation: "Developer",
+    address: {
+      street: "Rohini",
+      city: "Delhi",
+    },
+  };
+
+  Object.freeze(employee);
+
+  employee.name = "Dummy"; // Fails silently in non-strict mode.
+  employee.address.city = "Noida"; // Attributes of child object can be modified.
+
+  console.log(employee.address.city); // "Noida"
+  ```
+
+  </StaticCodeContainer>
+
+  In the last example, we got to see that the result of calling `Object.freeze(object)` _only_ applies to the immediate 
+  properties of `object` itself, which means that it will prevent future property addition, removal, or value re-assignment 
+  operations only on `object`. If the value of those properties are objects themselves, those objects are not 
+  frozen and may be the target of property addition, removal, or value re-assignment operations.
+
+  ### Immutability: Deep Freeze
+  The `deepFreeze()` function checks if each property is an object and has not been frozen, then recursively freezes it. 
+  Finally, it freezes the main object, ensuring immutability throughout. Attempts to modify the object will throw errors, 
+  confirming its deeply frozen state:
+
+  <StaticCodeContainer>
+
+  ```js
+  index.js
+  --------
+  const obj1 = {
+    key1: "val1",
+    key2: "val2",
+    key3: ["val3", "val4", "val5"]
+  };
+
+  const deepFreeze = (obj) => {
+      Object.keys(obj).forEach((property) => {
+          if (typeof obj[property] === "object"
+              && obj[property] !== null &&
+              !Object.isFrozen(obj[property])) {
+              deepFreeze(obj[property]);
+          }
+      });
+      return Object.freeze(obj);
+  };
+
+  const deepFrozenObj = deepFreeze(obj1);
+
+  console.log("Before Change");
+  console.log(deepFrozenObj);
+
+  try {
+      // This won't modify deepFrozenObj
+      deepFrozenObj.key3[0] = "val";
+  } catch (e) {
+      console.error(`Error: ${e.message}`);
+  }
+
+  try {
+      // This won't modify deepFrozenObj
+      deepFrozenObj.key3[1] = "val";
+  } catch (e) {
+      console.error(`Error: ${e.message}`);
+  }
+
+  try {
+      // This won't modify deepFrozenObj
+      deepFrozenObj.key3[2] = "val";
+  } catch (e) {
+      console.error(`Error: ${e.message}`);
+  }
+
+  console.log("After Change");
+  console.log(deepFrozenObj);
+
+  // Before Change
+  // { key1: 'val1', key2: 'val2', key3: [ 'val3', 'val4', 'val5' ] }
+  // After Change
+  // { key1: 'val1', key2: 'val2', key3: [ 'val3', 'val4', 'val5' ] }
+  ```
+
+  </StaticCodeContainer>
+
+  ---
+
+  ## 9. Documentation
+
+  If you are still curious about objects and other matters, how about giving the fantastic 
+  [Eloquent JavaScript](https://eloquentjavascript.net/) a try? It's free!
+
+  ---
+
+  ## 10. Related notes
+
+  <RelatedLesson relatedLesson={frontmatter.relatedLesson} />
+
+</div>
