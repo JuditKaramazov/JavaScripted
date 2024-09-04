@@ -1,0 +1,352 @@
+---
+name: Coercion
+rank: 7
+tagline: Type coercion is the automatic (or implicit) conversion of values from one data type to another.
+relatedLesson:
+  - types
+---
+
+import LessonDescription from "../../components/LessonDescription.astro";
+import StaticCodeContainer from "../../components/StaticCodeContainer.astro";
+import RelatedLesson from "../../components/RelatedLesson.astro";
+
+<LessonDescription name={frontmatter.name}>
+  As previously introduced, type coercion refers to the automatic conversion of values 
+  from one data type to another, typically performed during operations or comparisons 
+  involving different data types (such as strings to numbers, for instance). By using 
+  Type Coercion, JavaScript attempts to make the data types compatible to complete the 
+  operation or comparison.
+</LessonDescription>
+
+## Table of Contents
+
+1. [1. Introduction](#1-introduction)
+    - [- Explicit Coercion](#explicit-coercion)
+2. [2. ToString](#2-trostring)
+3. [3. ToNumber](#3-tonumber)
+    - [- parseInt](#parseint)
+4. [4. ToBoolean](#4-toboolean)
+    - [- Implicit Coercion](#implicit-coercion)
+5. [5. Equality](#5-equality)
+6. [6. Documentation](#6-documentation)
+7. [7. Related notes](#6-related-notes)
+
+---
+
+<div class="reference">
+  ## 1. Introduction 
+
+  A type can be converted in **two different ways**:
+
+  <div class="table-container">
+  |                   | Description                                                                                                                                                           |
+  | ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+  | **Type casting**  | Explicitly converting a value from one type to another. Occurs in statically typed languages at compile time. TypeScript example: `const myVar = otherVar as string`. |
+  | **Coercion**      | Occurs in dynamically typed languages, like JavaScript, at runtime. It can happen in **2 different ways**:  
+  |                   | &nbsp;&nbsp;&nbsp;&nbsp;▪ **Explicit**: the intent is to obviously convert a value from one type to another.                                                          |
+  |                   | &nbsp;&nbsp;&nbsp;&nbsp;▪ **Implicit**: type conversion occurs as a side-effect of some operation.                                                                    |
+  </div>
+
+  Let's see some examples: 
+
+  <StaticCodeContainer>
+
+  ```js
+  example1.js
+  -----------
+  const a = 42;
+
+  // Explicit coercion.
+  const c = String(a);
+
+  // Implicit coercion.
+  const b = a + "";
+  ```
+
+  ---
+
+  ```js
+  example2.js
+  -----------
+  // In explicit coercion, the number() function converts 
+  // a value to its numeric representation.
+
+  const stringNumber = "42";
+  const number = Number(stringNumber);
+  console.log(number); // Output: 42 (a number) 
+
+  // However, when performing arithmetic operations 
+  // involving strings and numbers, JavaScript converts 
+  // the string to a number (implicit coercion):
+
+  var num = 42;
+  var result = num + "10";
+  console.log(result); // Output: "4210" (a string)
+  ```
+
+  </StaticCodeContainer>
+
+  **Note**: Whenever coercion occurs, 1 or more internal operations, known as abstract operations, are performed. 
+  It always results in a [primitive](/types#primitives). 
+
+  <div style="display: flex; justify-content: center; padding-top: 1rem;">
+    <img src="src/content/images/_language-metaphor.svg" alt="Translation from one language to another visual asset." width="150px" height="auto" align-items="center" />
+  </div>
+
+  **Metaphor time:**
+
+  Coercion is somehow similar to translating words from one language to a similar one, like Spanish and 
+  Italian. If we were to translate the word "**noche**" (night) to Italian, as translators, we would look at 
+  all the available Italian words until we could find the one best matching the Spanish word's meaning: in 
+  this case, "**notte**".
+
+  In JavaScript, the translator would be the engine, the word, a value, and the languages, JavaScript's types. 
+  Now, imagine that the engine needs to coerce a value from a `string` to a `boolean`. The engine would look at 
+  the available "words" (values) in the `boolean` "language" (type). Sadly, in this case, there are only two options: 
+  `true` or `false`, and whichever is selected, a lot of the string's meaning would be lost in translation, as it 
+  happens too in our own adaptations. 
+
+  ### Explicit Coercion 
+
+  To explicitly coerce a value to a string, number, or boolean, remember to use the built-in [native contructors](/types#3-native-constructors). 
+  In this case, the `new` keyword isn't used, so an object wrapper isn't created. 
+
+  <StaticCodeContainer>
+
+  ```js
+  index.js
+  --------
+  const a = 1;
+  const b = String(a);
+
+  const c = "1";
+  const d = Number(c);
+
+  const e = "1";
+  const f = Boolean(c); 
+
+  // The following constructors can coerce any value 
+  // to a primitive based on the rules of the abstract 
+  // operations:
+
+  // ToString
+  // ToNumber
+  // ToBoolean
+  ```
+
+  </StaticCodeContainer>
+
+  ---
+
+  ## 2. ToString 
+
+  The `ToString` abstract operation rules are:
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ `null` becomes "`null"` 
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ `undefined` becomes `"undefined"`
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ `true` becomes `"true"`
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ `number: 1` becomes `"1"`. 
+
+  <StaticCodeContainer>
+
+  ```js
+  index.js
+  --------
+  // Very small or large numbers become their exponent form:
+
+  const a = 1.07 * 1000 * 1000 * 1000 * 1000 * 1000 * 1000 * 1000;
+  const aStr = a.toString();
+
+  // Seven times three digits => 21 digits
+  console.log(aStr)
+  // Output: 1.07e+21
+  ```
+
+  ---
+
+  ```js
+  index.js
+  --------
+  /* Object values have their own toString() method.
+  If you implicitly coerce an object, its toString() 
+  will automatically be called: */
+
+  const obj = [1,2];
+
+  // Explicit.
+  console.log(obj.toString()) // Output: 1,2
+
+  // Implicit.
+  // If either operand to '+' is a string, the operation will be 
+  // string concatenation:
+  console.log(obj + "") // Output: 1,2
+  ```
+
+  </StaticCodeContainer>
+
+  ---
+
+  ## 3. ToNumber 
+
+  The `ToNumber` abstract operation rules are:
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ `true` becomes `1`
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ `false` becomes `0`
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ `undefined` becomes `NaN`
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ `null` becomes `0`
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ string: `"1"` becomes `1`, `"a"` becomes `NaN` 
+
+  <br/>
+
+  To coerce an `Object` value:
+
+  <div class="table-container">
+  | Step | Description                                                                                                                                                                       |
+  | ---- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+  | 1.   | The `ToPrimitive()` abstract operation will check if the object has a `valueOf()` method.                                                                                         |
+  |      | &nbsp;&nbsp;&nbsp;&nbsp;▪ If it exists and it returns a primitive value, that value will be used.                                                                                |
+  |      | &nbsp;&nbsp;&nbsp;&nbsp;▪ If it doesn’t exist, but `toString()` does, its return value will be used.                                                                             |
+  |      | &nbsp;&nbsp;&nbsp;&nbsp;▪ If neither exist or don’t return a primitive, a `TypeError` is thrown.                                                                                  |
+  | 2.   | The primitive value will be coerced as per the `ToNumber` rules above.                                                                                                            |
+  </div>
+
+  <StaticCodeContainer>
+
+  ```js
+  index.js
+  --------
+  const objA = {
+    valueOf: function(){
+      return 1;
+    }
+  };
+
+  const objB = {
+  toString: function(){
+  return "1";
+  }
+  };
+
+  const objC = [4,2];
+  objC.toString = function(){
+  return this.join( "" );
+  };
+
+  console.log(Number(objA)) // Output: 1
+  console.log(Number(objB)) // Output: 1
+  console.log(Number(objC)) // Output: 42
+  console.log(Number([])) // Output: 0
+  console.log(Number(["abc"])) // Output: NaN
+  ```
+
+  </StaticCodeContainer>
+
+
+  ### parseInt 
+
+  `parseInt(..)` can be used to get a numeric value out of a string containing non-numeric characters. It parses 
+  left-to-right and stops when a non-numeric value is found.
+
+  <div class="table-container">
+  | const a = "42px";    | Outputs                                   |
+  | -------------------- | ----------------------------------------  |
+  |                      | `console.log(Number(a)); // Output: NaN`  |
+  |                      | `console.log(parseInt(a)); // Output: 42` |
+  </div>
+
+  ---
+
+  ## 4. ToBoolean 
+
+  The `ToBoolean` abstract operation rules are:
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ `undefined` becomes `false`
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ `null` becomes `false`
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ `+0`, `-0`, and `NaN` becomee `false`
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ `""` becomes `false`
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ all other values become `true` 
+
+   <div class="table-container">
+  | var myVar = 1;    | Outputs                                          |
+  | ------------------ | ----------------------------------------------  |
+  |                    | `console.log(Boolean(myVar)); // Output: true`  |
+  |                    | `console.log(!!myVar); // Output: true`         |
+  </div>
+
+  ### Implicit Coercion 
+
+  Expression operations that are implicitly coerced to a boolean:
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ The test expression in an `if (..)` statement.
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ The test expression (2nd clause) in a `for ( .. ; .. ; .. )` header.
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ The test expression in `while (..)` and `do..while(..)` loops.
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ The test expression (1st clause) in a ? : ternary expression.
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ The left-hand operand to the `||` and `&&` operators.
+
+  ---
+
+  ## 5. Equality
+
+  When comparing 2 values for equality, commonly used operators are:
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ loose equality: `==`
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ strict equality: `===`
+
+  <StaticCodeContainer>
+
+  ```js
+  index.js
+  --------
+  /* Remember something crucial: 
+  Loose allows coercion. 
+  Strict doesn't. */
+  
+  // Examples:
+
+  const a = 42;
+  const b = "42";
+
+  console.log(a == b);
+  console.log(a === b);
+
+  // Outputs:
+  // true
+  // false 
+  ```
+
+  </StaticCodeContainer>
+
+  ---
+
+  ## 6. Documentation 
+
+  If you found this useful, please refer **You don't know JavaScript**'s [Chapter 4: Coercion](https://github.com/getify/You-Dont-Know-JS/blob/1st-ed/types%20%26%20grammar/ch4.md) - 
+  and don't forget to have a look at these useful resources as well:
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪[freeCodeCamp](https://www.freecodecamp.org/news/js-type-coercion-explained-27ba3d9a2839/)
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪[HackerNoon](https://hackernoon.com/what-is-type-coercion-and-type-casting-in-javascript)
+
+  ---  
+
+  ## 7. Related notes
+  
+  <RelatedLesson relatedLesson={frontmatter.relatedLesson} />
+
+</div>
