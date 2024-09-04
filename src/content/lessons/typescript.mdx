@@ -1,0 +1,132 @@
+---
+name: TypeScript
+rank: 11
+tagline: TypeScript is a typed superset of JavaScript that adds structure and catches type safety errors.
+---
+
+import LessonDescription from "../../components/LessonDescription.astro";
+import StaticCodeContainer from "../../components/StaticCodeContainer.astro";
+
+<LessonDescription name={frontmatter.name}>
+  Getting going with TypeScript isn't as straightforward as it seems. There's tooling 
+  to configure, and the type system requires a different way of thinking about variables 
+  and functions than you used in JavaScript. Concepts like generics, mapped types, and 
+  type guards might be confusing, and the TypeScript compiler can (and **will**) be unforgiving 
+  when it comes to type errors.
+
+  But that's the exact beauty of it.
+</LessonDescription>
+
+## Table of Contents
+
+1. [1. Introduction](#1-introduction) 
+2. [2. Advantages](#2-advantages)
+3. [3. Stop reading and go TypeScripted](#3-stop-reading-and-go-typescripted)
+
+<div class="reference">
+  
+  ## 1. Introduction 
+
+  This will probably be my shortest entry when it comes to this collection of JavaScript 
+  notes I decided to share. However, and just as stated before, yes: there are certain 
+  TypeScript concepts and features you'll have to interiorize, but don't forget where you 
+  come from: 
+  
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ basic autocompletion, 
+  
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ limited refactoring support, 
+  
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ and the constant fear of runtime errors. 
+
+  JavaScript's flexibility is a **double-edged sword**. While it allows you to quickly write code that 
+  works, it also leaves you open to runtime errors and subtle bugs that can be tricky to track down. 
+
+  ## 2. Advantages 
+
+  TypeScript provides the following advantages (and quite more) over vanilla JavaScript:
+
+  <div class="table-container">
+  | **TypeScript**  | Advantages                                                          |
+  | --------------- | ------------------------------------------------------------------  |
+  |                 | Self-documentation.                                                 |
+  |                 | Tooling that improves developer experience (e.g., IntelliSense).    |
+  |                 | Eliminates runtime bugs through static analysis.                    |
+  |                 | Facilitates easier refactoring with type safety.                    |
+  |                 | Better collaboration through clear type contracts.                  |
+  </div>
+
+  Making types clear directs our attention to the details of our system's construction and the interactions 
+  between its many components. In addition, **types invalidate many trivial errors** that may creep into JavaScript 
+  codebases - and **provide a rapid feedback loop** for correcting all the minor problems that occur while writing 
+  new code or refactoring.
+
+  However, although this might sound overwhelming, JavaScript and TypeScript **are not so different** at all.
+
+  ---
+
+  ## 3. Stop reading and go TypeScripted
+
+  TypeScript wasn't invented to make JavaScript strongly typed: it was built to **allow amazing tooling** for 
+  JavaScript.
+
+  Let's imagine JavaScript, but with static type features added. If we remove all of the types from TypeScript code, 
+  what's left should be valid JavaScript code. The formal word used in the TypeScript documentation is "type-level extension": 
+  most TypeScript features are **type-level extensions** to JavaScript, and they don't affect the code's runtime behavior:
+
+  <StaticCodeContainer>
+
+  ```ts
+  index.ts 
+  --------
+  // TypeScript example.
+
+  function add(x: number, y: number): number {
+    return x + y;
+  }
+  add(1, 2); // Evaluates to 3.
+
+  // Here, we see a type-level extension example, 
+  // written in TypeScript.
+  ```
+
+  ---
+
+  ```js
+  index.js
+  --------
+  // JavaScript example. 
+
+  function add(x, y) {
+    return x + y;
+  }
+  add(1, 2); // Evaluates to 3.
+
+  /* The compiler checks the code's types to generate 
+  JavaScript code. By removing the type annotations, 
+  what we have is perfectly legal JavaScript code. */
+  ```
+
+  </StaticCodeContainer>
+
+  In the beginning, TypeScript was unthinkable for me - until I saw an example similar to this one. We can't reduce 
+  TypeScript to this specific example, as you'll encounter both **differences and similarities** between it and JavaScript. 
+
+  Embrace this example if you don't feel confident enough, though - and keep building from it.
+
+  Now, allow me to repeat myself: **go TypeScript yourself**. I am serious.
+
+  Stop reading me.
+
+  Close this window. 
+
+  Don't be scared.
+  
+  It'll be fine.
+
+  TypeScript your limits. 
+
+  <div style="display: flex; justify-content: center; padding-top: 1rem;">
+    <img src="src/content/images/_typescript-flag.svg" alt="JavaScript mascot holding a TypeScript flag." width="190px" height="auto" align-items="center" />
+  </div>
+
+</div>
