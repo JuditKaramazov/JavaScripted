@@ -1,0 +1,73 @@
+---
+---
+
+<footer class="main-footer">
+  <a href="/" class="logo image">
+    <img src="/img/javascripted-logo.svg" width="546" height="80" alt="JavaScripted logo." />
+  </a>
+  <a href="https://karamazfolio.xyz" class="byline">by Judit Lázaro</a>
+  <a href="https://pythomazov.tech" class="aspartofline">as part of PythoMazov</a>
+  <nav>
+    <a href="https://github.com/JuditKaramazov">GitHub(ed)</a>
+    <a href="https://karamablog.xyz">Personal blog</a>
+    <a href="mailto:j.lazaromoyano7@gmail.com">Contact me</a>
+    
+  </nav>
+</footer>
+
+<style>
+  .main-footer {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 4rem;
+    align-items: center;
+    border: var(--border-dark);
+    border-radius: 0.5rem;
+    gap: 2rem;
+    font-size: var(--font-sm);
+    padding: var(--body-padding);
+  }
+
+  nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 2rem;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .logo {
+    width: 200px;
+  }
+
+  .byline {
+    display: inline-block;
+    margin-top: -0.5rem;
+    background-color: var(--charcoal);
+    border-radius: 0.3em;
+    padding: 0.3em 0.5em;
+  }
+
+  .byline:hover {
+    background-color: var(--blue);
+    color: var(--charcoal);
+  }
+
+  .aspartofline {
+    display: inline-block;
+    margin-top: -1rem;
+    background-color: var(--charcoal);
+    border-radius: 0.3em;
+    padding: 0.3em 0.5em;
+  }
+
+  .aspartofline:hover {
+    background-color: var(--yellow);
+    color: var(--charcoal);
+  }
+
+  nav a:hover {
+    text-decoration: underline;
+  }
+</style>
