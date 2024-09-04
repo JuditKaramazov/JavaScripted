@@ -1,0 +1,402 @@
+---
+name: this
+rank: 9
+tagline: The this keyword is used to indicate the context of a function - and it represents a binding.
+relatedLesson:
+  - variables
+---
+
+import LessonDescription from "../../components/LessonDescription.astro";
+import StaticCodeContainer from "../../components/StaticCodeContainer.astro";
+import RelatedLesson from "../../components/RelatedLesson.astro";
+
+<LessonDescription name={frontmatter.name}>
+  The "this" keyword refers to the context where a piece of code, such as a function's 
+  body, is supposed to run. Most typically, it is used in object methods, where "this" 
+  refers to the object the method is attached to, thus allowing the same method to be reused 
+  on different objects. 
+
+  The value of "this" in JavaScript depends on how a function is invoked (runtime binding), 
+  not how it is defined.
+</LessonDescription>
+
+## Table of Contents
+
+1. [1. Introduction](#1-introduction)
+2. [2. Call-Site](#2-call-site)
+3. [3. Rules](#3-rules)
+4. [4. No Bridge Allowed](#4-no-bridge-allowed)
+5. [5. Arrow Functions](#5-arrow-functions)
+6. [6. Documentation](#6-documentation)
+7. [7. Related notes](#7-related-notes)
+
+---
+
+<div class="reference">
+
+  ## 1. Introduction 
+
+  When a function is invoked, it creates an execution context containing:
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ where the function was called (the call-stack),
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ how the function was called,
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ what parameters were passed,
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ the `this` reference. `this` is a keyword representing a binding.
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ ...
+
+  Below, you will see that `func` is called in the global scope. When that is executed, `this` 
+  becomes a bound to the global object. When `this.a = 1` is executed, it will result in 
+  `globalThis.a = 1`. 
+
+  <StaticCodeContainer>
+
+  ```js
+  index.js
+  --------
+  function func() {
+    this.a = 1;
+  }
+
+  func();
+
+  console.log(func.a)
+  console.log(globalThis.a)
+
+  // Output: 
+  // undefined 
+  // 1
+  ```
+
+  ---
+
+  ```js
+  index.js
+  --------
+  /* If the intention was to add an a property to the func object, .call(..) could be used. 
+  It calls a function and defines what this is bound to. */
+
+  function func() {
+   this.a = 1;
+  }
+
+  func.call(func);
+
+  console.log(func.a)
+  console.log(globalThis.a)
+
+  // Output: 
+  // 1 
+  // undefined
+  ```
+
+  </StaticCodeContainer>
+
+  ---
+
+  ## 2. Call-Site
+
+  If you need to find what this is bound to at some point in your code, you 1st need to find the 
+  **call-site**: this is, the location where a function is called. It can be determined by looking at 
+  the [call-stack](https://www.javascripttutorial.net/javascript-call-stack/), a structure that records 
+  the current position of an executable script.
+
+  <StaticCodeContainer>
+
+  ```js
+  index.js
+  --------
+  function func3() {
+   // Call-stack = main -> func1 -> func2 -> func3
+   // Call-site = func2
+  }
+
+  function func2() {
+  // Call-stack = main -> func1 -> func2
+  // Call-site = func1
+
+  func3();
+  }
+
+  function func1() {
+  // Call-stack = main -> func1
+  // Call-site = main
+
+  func2();
+  }
+
+  // Call-stack = main
+
+  func1();
+  ```
+
+  </StaticCodeContainer>
+
+  **Note**: Remember that the call-stack can be viewed in the browser dev tools. Set a breakpoint and refresh 
+  the page; the debugger will pause at this exact line. Then, it will display the current **call-stack**. The 
+  second item from the top will be the **call-site**.
+
+  ---
+
+  ## 3. Rules 
+
+  Base on the call-site, ask these questions in order. Stop when the first rule applies:
+
+  ### I. Is the function called with a "new" binding? 
+
+  When a function is invoked with `new` in front of it (a constructor call):
+
+  <StaticCodeContainer>
+
+  ```js
+  index.js
+  --------
+  // Example of "new" binding.
+
+  function func(a) {
+    this.a = a;
+  }
+
+  const myVar = new func(1);
+  console.log(myVar.a) 
+
+  // Output: 1
+
+  /* Steps:
+  1st, a new object is created.
+  2nd, the object is [[Prototype]]-linked.
+  3rd, the object is set as the "this" binding 
+  for that function call.
+  4th, the new-invoked function call will automatically 
+  return the newly constructed object. */
+  
+  // Exception:
+  // If the function returns its own alternate object.
+  ```
+
+  </StaticCodeContainer>
+
+  ### II. Has "bind(..)" been used? 
+
+  <StaticCodeContainer>
+
+  ```js
+  index.js
+  --------
+  // Example of "bind" usage.
+
+    function func1() {
+    console.log(this.a);
+  }
+
+  const obj = {
+  a: 1
+  };
+
+  const func2 = func1.bind(obj)
+  func2()
+
+  // Output: 1
+
+  // Explanation: 
+  // bind(..) returns a new function that is hard-coded to call 
+  // the original function with the specified "this".
+  ```
+
+  </StaticCodeContainer>
+
+  ### III. Are "call(..)" or "apply(..)" used? 
+
+  <StaticCodeContainer>
+
+  ```js
+  index.js
+  --------
+  // Example of "call" usage.
+
+  function func() {
+    console.log(this.a);
+  }
+
+  const obj = {
+  a: 1
+  };
+
+  func.call(obj);
+
+  // Output: 1
+
+  /* Explanation: 
+  call(..) invokes a function and defines what "this" should be 
+  a bound to. 
+  apply(..) would have the same result. */
+  ```
+
+  </StaticCodeContainer>
+
+
+  ### IV. Does the call-site have a context object? 
+
+  `this` is the already-mentioned context object. Considering that:
+
+  <StaticCodeContainer>
+
+  ```js
+  index.js
+  --------
+  /* Example of call-site using obj's context 
+  to reference the function. /*
+
+  function func() {
+    console.log(this.a);
+  }
+
+  const obj = {
+  a: 1,
+  func
+  };
+
+  obj.func();
+
+  // Output: 1
+
+  /* Explanation: 
+  At the point that func is called, it's preceded 
+  by an object reference to obj. /* 
+  ```
+  
+  </StaticCodeContainer>
+
+  What we just saw is common when using browser API functions like `setTimeout(() => { .. }, 1000)`. 
+  Here, `setTimeout` is actually `window.setTimeout`. Therefore, `this` within the anonymous function 
+  is `window`.
+
+  ### V. "undefined" in strict mode, global object otherwise 
+
+  <StaticCodeContainer>
+
+  ```js
+  index.js
+  --------
+  // The catch-all rule when none of the other rules apply.
+
+  function func() {
+    console.log(this.a);
+  }
+
+  // A var declared in the global scope will set  
+  // a property on the global object:
+  var a = 1;
+
+  func();
+
+  // Output: 1
+
+  // Explanation: 
+  // When func is called, this is bound to the global object.
+  ```
+  
+  </StaticCodeContainer>
+
+  ---
+
+  ## 4. No Bridge Allowed
+
+  Make no mistake: `this` does not refer to a function's scope. Let's analyze an example. 
+
+  <StaticCodeContainer>
+
+  ```js
+  index.js
+  --------
+  function func1() {
+    const a = 1;
+    this.func2();
+  }
+
+  function func2() {
+  console.log(this.a);
+  }
+
+  func1();
+
+  // Output: undefined
+
+  /* Explanation: 
+  The above code is attempting to use "this" to create 
+  a bridge between the scopes of func1 and func2, 
+  so that func2 can access a. */
+  ```
+  
+  </StaticCodeContainer>
+
+  **No such bridge is possible**. You can't use a `this` reference to look something up in a scope. 
+
+  No wormholes here either, I'm afraid.
+
+  ---
+
+  ## 5. Arrow Functions 
+
+  Instead of the 4 standard binding rules, an arrow-function, `() => { .. }` will adopt the `this` binding 
+  from its enclosing function call. Set when the function is created, not to the environment in which the 
+  function is called.
+
+  <div style="display: flex; justify-content: center; padding-top: 1rem;">
+    <img src="src/content/images/_arrow-function.svg" alt="Arrow function visual example." width="270px" height="auto" align-items="center" />
+  </div>
+
+  As an example: 
+
+  <StaticCodeContainer>
+
+  ```js
+  index.js
+  --------
+  const obj = {
+    a: 1,
+    func1() {
+        console.log(this.a);
+    },
+    func2: () => {
+        // As we are in an arrow function, 'this' = func2.
+        // Setting func2.a = 2
+        a = 2
+        console.log(this.a);
+        // Therefore, this.a = 2 (irrelevant where func2 gets called)
+    }
+  };
+
+  // 'this' is set.
+  obj.func1()
+  obj.func2()
+
+  // Output:
+  // 1
+  // 2
+  ```
+  
+  </StaticCodeContainer>
+
+  ---
+
+  ## 6. Documentation 
+
+  There are some great explanations out there that I would definitely recommend, such as: 
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ [freeCodeCamp](https://www.freecodecamp.org/news/the-this-keyword-in-javascript/), or 
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ [You Don't Know JS: this & Object Prototypes](https://github.com/getify/You-Dont-Know-JS/blob/1st-ed/this%20%26%20object%20prototypes/README.md)
+
+  Remember, however, that these notes need to work **for you**, no matter what others say!
+
+  ---
+
+  ## 7. Related notes
+
+  <RelatedLesson relatedLesson={frontmatter.relatedLesson} />
+
+</div>
