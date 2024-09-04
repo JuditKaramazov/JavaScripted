@@ -9,7 +9,7 @@ const dir = "./src/content/lessons";
 try {
   const files = await readdir(dir);
   const logo = await readFile(
-    new URL("./public/img/javascripted-logo.svg", import.meta.url),
+    new URL("./public/img/icons/javascripted-logo.svg", import.meta.url),
     {
       encoding: "base64",
       width: 300,
@@ -101,7 +101,7 @@ async function generateOgImage({ title, slug, description, logo }) {
       <div class="wrapper">
         <div class="top">
           <img class="logo" src="data:image/svg+xml;base64,${logo}" />
-          <div class="install"><span>></span> npm i @JuditKaramazov/JavaScripted</div>
+          <div class="install"><span>></span>@JuditKaramazov/JavaScripted</div>
         </div>
         <div class="bottom">
           <div class="title">${title}</div>
