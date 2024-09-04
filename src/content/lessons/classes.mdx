@@ -1,0 +1,223 @@
+---
+name: Classes
+rank: 2
+tagline: Classes are special functions for creating objects.
+relatedLesson:
+  - objects
+  - reference
+---
+
+import LessonDescription from "../../components/LessonDescription.astro";
+import StaticCodeContainer from "../../components/StaticCodeContainer.astro";
+import RelatedLesson from "../../components/RelatedLesson.astro";
+
+<LessonDescription name={frontmatter.name}>
+  We could say that JavaScript is a prototype-based language. The creation and behavior of objects 
+  are based on prototypes that are objects themselves. Compared to other class-based languages, 
+  JavaScript doesn’t have any class system and relies on objects. With the addition of classes in 
+  JavaScript, it’s now possible to use more traditional class creation and inheritance. Classes are 
+  templates for objects. You assemble a single template which is used to create various objects.
+</LessonDescription>
+
+## Table of Contents
+
+1. [1. Constructor](#1-constructor)
+2. [2. Extending](#2-extending)
+3. [3. Public and Private](#3-public-and-private)
+4. [4. Documentation](#4-documentation)
+5. [5. Related notes](#5-related-notes)
+
+---
+
+<div class="reference">
+
+  ### new
+
+  The `new` operator creates an instance of a user-defined object type or of one of the built-in 
+  object types that have a constructor function. When a function is invoked with `new` in front 
+  of it, we call it a constructor call. It will:
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ create a new object,
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ the object is `[[Prototype]]`-linked to the function,
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ the returned object is set as the `this` binding for that function call and
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ unless the function returns its own alternate object, the new-invoked function call will automatically return the newly constructed object.
+
+  <StaticCodeContainer>
+
+  ```js
+  index.js
+  --------
+  class Point {
+    constructor(x, y) {
+      this.x = x;
+      this.y = y;
+    }
+
+    static displayName = "Point";
+    static distance(a, b) {
+      const dx = a.x - b.x;
+      const dy = a.y - b.y;
+
+      return Math.hypot(dx, dy);
+    }
+  }
+
+  const p1 = new Point(5, 5);
+  const p2 = new Point(10, 10);
+  p1.displayName; // undefined
+  p1.distance; // undefined
+  p2.displayName; // undefined
+  p2.distance; // undefined
+
+  console.log(Point.displayName); // "Point"
+  console.log(Point.distance(p1, p2)); // 7.0710678118654755
+  ```
+
+  </StaticCodeContainer>
+
+  ---
+
+  ## 1. Constructor
+
+  The constructor method is a special field for initializing an object created with a class.
+
+  <StaticCodeContainer>
+
+  ```js
+  index.js
+  --------
+  class MyClass {
+    constructor(a) {
+      this.a = a
+    }
+  }
+
+  const myObj = new MyClass(1)
+
+  console.log(myObj) // Output: { "a": 1 }
+  ```
+
+  ---
+
+  ```js
+  index.js
+  --------
+  /* Remember that the behaviour of a class can be replicated using a 
+   plain function: */
+
+  function MyContructor(a) {
+    this.a = a
+  }
+
+  // Creating an instance of MyContructor.
+  const myObj = new MyContructor(1)
+
+  // The prototype of "myObj" will be "MyContructor".
+  console.log(myObj) // Output: { "a": 1 }
+  ```
+
+  </StaticCodeContainer>
+
+  ---
+
+  ## 2. Extending
+
+  Using the extend keyword, a class can extend another class. This removes the need to 
+  rewrite functionality you want to use across multiple classes.
+
+  <StaticCodeContainer>
+
+  ```js
+  index.js
+  --------
+  class Parent {
+    constructor(a) {
+      this.a = a
+    }
+  }
+
+  class Child extends Parent {}
+
+  const child = new Child(1)
+  console.log(child.a)
+  ```
+
+  ---
+
+  ```js
+  index.js
+  --------
+  /* If the child uses a contructor method, the super keyword
+   needs to be called before this can be used. 
+   It will invoke the parent's contructor method. */
+
+  class Parent {
+    constructor(a) {
+      this.a = a
+    }
+  }
+
+  class Child extends Parent {
+    constructor(a, b) {
+    super(a)
+    this.b = b
+    }
+  }
+
+  const child = new Child(1, 2)
+  console.log(child.a) // 1
+  console.log(child.b) // 2
+  ```
+
+  </StaticCodeContainer>
+
+  ---
+
+  ## 3. Public and Private
+
+  Fields are public by default. Prefixing a field with a `#` will make them private. 
+  Private fields can only be accessed within the class:
+
+  <StaticCodeContainer>
+
+  ```js
+  index.js
+  --------
+  class MyClass {
+    publicField = 1
+    #privateField = 2
+
+    logPrivateField() {
+    console.log(this.#privateField)
+    }
+  }
+
+  const myClass = new MyClass()
+
+  console.log(myClass.publicField) // 1
+  console.log(myClass.privateField) // undefined
+  myClass.logPrivateField() // 2
+
+  // Remember something crucial, though:
+  // The constructor field cannot be private.
+  ```
+
+  </StaticCodeContainer>
+
+  ---
+
+  ## 4. Documentation 
+
+  As usual, don't forget to check [MDN Web Docs](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes) 
+  in order to get a better understanding of classes, as well as many other JavaScript aspects.
+
+  ---
+
+  ## 5. Related notes
+
+  <RelatedLesson relatedLesson={frontmatter.relatedLesson} />
+
+</div>
