@@ -1,0 +1,82 @@
+---
+const { text } = Astro.props;
+const { class: className } = Astro.props;
+---
+
+<div class={`install ${className}`}>
+  <code class={className}>{text}</code>
+  <button class={`copy-btn ${className}`}>Copy</button>
+</div>
+
+<script>
+  const copyButton = document.querySelector(`.copy-btn`);
+  const copyText = document.querySelector(`.install code`).textContent;
+
+  copyButton.addEventListener("click", async () => {
+    try {
+      if (navigator?.clipboard?.writeText) {
+        await navigator.clipboard.writeText(copyText);
+        copyButton.textContent = "Copied!";
+        setTimeout(() => {
+          copyButton.textContent = "Copy";
+        }, 3000);
+      } else {
+        throw new Error("writeText not supported");
+      }
+    } catch (e) {
+      oldSchoolCopy(copyText);
+    }
+  });
+
+  function oldSchoolCopy(text) {
+    const tempTextArea = document.createElement("textarea");
+    tempTextArea.value = text;
+    document.body.appendChild(tempTextArea);
+    tempTextArea.select();
+    document.execCommand("copy");
+    document.body.removeChild(tempTextArea);
+  }
+</script>
+
+<style>
+  .install {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    background-color: var(--charcoal);
+    border-radius: 0.5rem;
+    justify-content: space-between;
+    gap: clamp(0.7rem, 3vw, 2rem);
+    padding: clamp(1rem, 4vw, 1.3rem) clamp(1rem, 4vw, 1.5rem);
+  }
+
+  .install code {
+    margin-top: 0.3rem;
+    font-size: clamp(0.8rem, 3vw, 1.2rem) !important;
+    padding: 0;
+  }
+
+  .install code::before {
+    content: ">";
+    display: inline-block;
+    margin-right: 0.5rem;
+    color: var(--green);
+  }
+
+  .copy-btn {
+    background: no-repeat url("/img/icon-copy.svg") 0.4rem 50% / 0.9rem auto;
+    border: var(--border-light);
+    border-radius: 0.3rem;
+    font-size: clamp(0.7rem, 2vw, 0.9rem);
+    font-weight: 500;
+    padding: 0.2rem 0.4rem;
+    padding-left: 1.7rem;
+    transition: all 200ms ease-in-out;
+  }
+
+  .copy-btn:hover,
+  .copy-btn:focus-visible {
+    background-color: var(--coal);
+    color: var(--white);
+  }
+</style>
