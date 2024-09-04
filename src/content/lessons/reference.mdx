@@ -1,0 +1,207 @@
+---
+name: Reference
+rank: 3
+tagline: Referential equality is when two or more variables point to the same object in memory.
+relatedLesson:
+  - objects
+  - classes
+---
+
+import LessonDescription from "../../components/LessonDescription.astro";
+import StaticCodeContainer from "../../components/StaticCodeContainer.astro";
+import RelatedLesson from "../../components/RelatedLesson.astro";
+
+<LessonDescription name={frontmatter.name}>
+  In JavaScript, all values that are not primitive (string, number, boolean, bigint, 
+  symbol, null, or undefined) are objects. This includes arrays, functions, and 
+  regular expressions. You need to be aware of referential equality when comparing 
+  objects. In plain words, referential equality determines whether the two provided 
+  operands refer to the same reference/object instance. The variables are considered 
+  referentially equal when compared because they reference the same object.
+</LessonDescription>
+
+## Table of Contents
+
+1. [1. Understanding Referential Equality](#1-understanding-referential-equality)
+2. [2. Value vs Reference](#2-value-vs-reference)
+3. [3. Documentation](#3-documentation)
+4. [4. Related notes](#4-related-notes)
+
+---
+
+<div class="reference">
+  ## 1. Understanding Referential Equality
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ **Example 1**: In the first code snippet below, the `operatingSystem` constant points to the 
+  object with the `name` and `developer` properties. The `operatingSystem2` constant points to the same object as the 
+  `operatingSystem` constant. It does not point to a copy.
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ **Example 2**: On the contrary, you may have two objects with the exact same shape, but because 
+  they are separate objects in memory, they are not considered referentially equal. Let's think of identical 
+  twins as a good example of this phenomenon: they may have the same DNA, but they are still two separate beings:
+
+  <StaticCodeContainer>
+
+  ```js
+  example1.js
+  -----------
+  const operatingSystem = {
+    name: "Windows",
+    developer: "Microsoft",
+  };
+
+  const operatingSystem2 = operatingSystem;
+
+  console.log(operatingSystem === operatingSystem2); // true
+  ```
+
+  ---
+
+  ```js
+  example2.js
+  -----------
+  const operatingSystem = {
+    name: "Windows",
+    developer: "Microsoft",
+  };
+
+  const operatingSystem2 = {
+    name: "Windows",
+    developer: "Microsoft",
+  };
+
+  console.log(operatingSystem === operatingSystem2); // false
+  ```
+
+  </StaticCodeContainer>
+
+  ### Primitives
+
+  If you compare primitive types (`null`, `undefined`, `string`, `number`, `boolean` or `symbol`) using the 
+  equality operator ===, the result is what you would expect:
+
+  <StaticCodeContainer>
+
+  ```js
+  index.js
+  ----------
+  const bool1 = true
+  const bool2 = true
+  console.log(bool1 === bool1)
+
+  const num1 = 1
+  const num2 = 1
+  console.log(num1 === num2)
+
+  const letter1 = "a"
+  const letter2 = "a"
+  console.log(letter1 === letter2)
+
+  // Expected results:
+  // true
+  // true
+  // true
+  ```
+
+  </StaticCodeContainer>
+
+  ### Objects
+
+  However, if you compare objects object, array, function (array and function are a sub-class of object), the 
+  result isn't as intuitive as one might think:
+
+  <StaticCodeContainer>
+
+  ```js
+  index.js
+  ----------
+  const person1 = {
+    name: "Deckard"
+  }
+  const person2 = {
+      name: "Deckard"
+  }
+  console.log(person1 === person2)
+
+  const letters1 = ["a", "b"]
+  const letters2 = ["a", "b"]
+  console.log(letters1 === letters2)
+
+  const function1 = () => null
+  const function2 = () => null
+  console.log(function1 === function2)
+
+  // As warned previously, the results are:
+  // false
+  // false
+  // false
+  ```
+
+  </StaticCodeContainer>
+
+  `person1` and `person2` are both the same type: `object`. They have the same properties and values. It would 
+  make sense if the equality operator returned true when comparing them. But it doesn't. This is because when 
+  you compare objects, the operator is testing `reference equality`, not value equality. Testing whether they 
+  are the same instance, not whether they are the same value. `person1` and `person2` may have the same value, 
+  but they are **2 different object instances**. Thus, when compared using the equality operator, it returns 
+  `false`.
+
+  ---
+
+  ## 2. Value vs Reference
+
+  When assigning or passing variables of a primitive, a copy of the value is created. When assigning or passing 
+  variables of an object, a copy of the reference is created.
+
+  Let's see two examples: 
+
+  <StaticCodeContainer>
+
+  ```js
+  example1.js
+  -----------
+  /* 'a' holds a copy of the value 2.
+  'b' is assigned a copy of the value 2.
+  Any changes to 'b' will not effect 'a'. */
+
+  var a = 2;
+  var b = a;
+  b++;
+  console.log(a)
+
+  // Therefore, the result is 2.
+  ```
+
+  ---
+
+  ```js
+  example2.js
+  -----------
+  /* 'c' holds a reference to the shared value '[1, 2, 3]'.
+  'd' holds a copy of the reference to shared value '[1, 2, 3]'.
+  When using the 'd' reference to modify the shared value, 'c' will be effected. */
+  
+  var c = [1,2,3];
+  var d = c;
+  d.push(4);
+  console.log(c);
+
+  // In this case, the result is [1,2,3,4]
+  ```
+
+  </StaticCodeContainer>
+
+  ---
+
+  ## 3. Documentation
+
+  If you'd want to know more about `types`, `grammar`, `values`, `coercion` or `natives`, don't hesitate to visit 
+  the specific ["Types & Grammar" chapter from You don't know JavaScript](https://github.com/getify/You-Dont-Know-JS/blob/1st-ed/types%20%26%20grammar/ch2.md).
+
+  ---
+
+  ## 4. Related notes
+
+  <RelatedLesson relatedLesson={frontmatter.relatedLesson} />
+
+</div>
