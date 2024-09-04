@@ -1,0 +1,20 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "../layouts/Layout.astro";
+import NavMain from "../sections/NavMain.astro";
+import Home from "../sections/Home.astro";
+import LessonsList from "../components/search/LessonsList";
+import Footer from "../sections/Footer.astro";
+
+const lessons = await getCollection("lessons");
+---
+
+<Layout
+  title="JavaScripted"
+  description="A collection of all the things you didn't know about JavaScript - JavaScripted for you!"
+>
+  <NavMain />
+  <Home />
+  <LessonsList client:load lessons={lessons} />
+  <Footer />
+</Layout>
