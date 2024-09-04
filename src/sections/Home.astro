@@ -1,0 +1,45 @@
+---
+import Install from '../components/Install.astro';
+import { getCollection } from 'astro:content';
+---
+
+<header class="hero">
+	<img src="/img/javascripted-logo.svg" width="546" height="80" alt="JavaScripted logo." />
+	<h1>A collection of all the things you didn't know about JavaScript - JavaScripted for you!</h1>
+	<Install text="npm i @JuditKaramazov/JavaScripted" />
+</header>
+
+<style>
+	.hero {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 2em 0;
+	}
+
+	.hero h1 {
+		max-width: 27ch;
+		margin: 1.2em 0;
+		font-family: outfit;
+		font-size: clamp(1.2rem, 2.5vw, 1.5rem);
+		font-weight: 400;
+		text-align: center;
+		text-transform: none;
+	}
+
+	.hero p {
+		margin-top: .5rem;
+		margin-bottom: .75rem;
+		font-size: 20px;
+	}
+
+	.hero img {
+		width: clamp(20rem, 50vw, 30rem);
+	}
+
+	.hero .install {
+		max-width: 40rem;
+		margin: 2.5rem 0 0;
+	}
+</style>
