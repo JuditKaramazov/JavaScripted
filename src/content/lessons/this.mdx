@@ -76,8 +76,10 @@ import RelatedLesson from "../../components/RelatedLesson.astro";
   ```js
   index.js
   --------
-  /* If the intention was to add an a property to the func object, .call(..) could be used. 
-  It calls a function and defines what this is bound to. */
+  /* 
+  If the intention was to add an a property to the func object, .call(..) could be used. 
+  It calls a function and defines what this is bound to.
+  */
 
   function func() {
    this.a = 1;
@@ -165,13 +167,15 @@ import RelatedLesson from "../../components/RelatedLesson.astro";
 
   // Output: 1
 
-  /* Steps:
+  /* 
+  Steps:
   1st, a new object is created.
   2nd, the object is [[Prototype]]-linked.
   3rd, the object is set as the "this" binding 
   for that function call.
   4th, the new-invoked function call will automatically 
-  return the newly constructed object. */
+  return the newly constructed object. 
+  */
   
   // Exception:
   // If the function returns its own alternate object.
@@ -229,10 +233,12 @@ import RelatedLesson from "../../components/RelatedLesson.astro";
 
   // Output: 1
 
-  /* Explanation: 
+  /* 
+  Explanation: 
   call(..) invokes a function and defines what "this" should be 
   a bound to. 
-  apply(..) would have the same result. */
+  apply(..) would have the same result. 
+  */
   ```
 
   </StaticCodeContainer>
@@ -247,8 +253,10 @@ import RelatedLesson from "../../components/RelatedLesson.astro";
   ```js
   index.js
   --------
-  /* Example of call-site using obj's context 
-  to reference the function. /*
+  /* 
+  Example of call-site using obj's context 
+  to reference the function. 
+  */
 
   function func() {
     console.log(this.a);
@@ -263,9 +271,11 @@ import RelatedLesson from "../../components/RelatedLesson.astro";
 
   // Output: 1
 
-  /* Explanation: 
+  /* 
+  Explanation: 
   At the point that func is called, it's preceded 
-  by an object reference to obj. /* 
+  by an object reference to obj. 
+  */ 
   ```
   
   </StaticCodeContainer>
@@ -325,10 +335,12 @@ import RelatedLesson from "../../components/RelatedLesson.astro";
 
   // Output: undefined
 
-  /* Explanation: 
+  /* 
+  Explanation: 
   The above code is attempting to use "this" to create 
   a bridge between the scopes of func1 and func2, 
-  so that func2 can access a. */
+  so that func2 can access a. 
+  */
   ```
   
   </StaticCodeContainer>
