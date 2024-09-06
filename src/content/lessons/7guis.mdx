@@ -2,6 +2,7 @@
 name: 7GUIs
 rank: 10
 tagline: 7GUIs is a programming benchmark to compare implementations in terms of their notation. 
+sandboxId: 8fnwtt
 previewHeight: 300px
 ---
 
@@ -10,24 +11,232 @@ import LessonDescription from "../../components/LessonDescription.astro";
 import StaticCodeContainer from "../../components/StaticCodeContainer.astro";
 
 <LessonDescription name={frontmatter.name}>
-  
+  7GUIs, also known as 7 Graphical User Interfaces, stand as a diligent comparison between diverse 
+  approaches to GUI development. This specific benchmark defines seven tasks that represent typical 
+  challenges in GUI programming; in addition, it provides a recommended set of evaluation dimensions, 
+  as identifying and propagating better approaches to GUI programming (ultimately pushing programming 
+  further) is not an easy task.
+
+  In this case, we will use vanilla HTML, CSS, and JavaScript for each task - and try our best to survive 
+  all of them. 
 </LessonDescription>
 
+## Table of Contents
+
+1. [1. Counter](#1-counter)
+2. [2. Temperature Converter](#2-temperature-converter)
+3. [3. Flight Booker](#3-flight-booker)
+4. [4. Timer](#4-timer)
+5. [5. CRUD](#5-CRUD) 
+6. [6. Circle Drawer](#6-circle-drawer)
+7. [7. Cells](#7-Cells)
+
+---
+
 <div class="reference">
-  ## 1. Introduction
+
+  ## 1. Counter 
+
+  ### Challenge 
+
+  Understanding the basic ideas of a language (or toolkit).
+
+  ### Criteria 
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ Build a frame containing a <strong>label or read-only textfield</strong> and a <strong>button</strong>.
+  
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ Initially, the <strong>value</strong> in the textfield is <strong>0</strong>.
+  
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ Each click of the button <strong>increases the value</strong> in textfield by 1. 
+
+  Counter serves as a gentle introduction to the basics of the language, paradigm and toolkit for one of 
+  the simplest GUI applications imaginable. Thus, Counter reveals the required scaffolding and how the 
+  very basic features work together to build a GUI application. A good solution will have almost no 
+  scaffolding:
+
+  <CodePreview
+    sandboxId={frontmatter.sandboxId}
+    previewHeight={frontmatter.previewHeight}
+  />
+
+  Although this example has been adjusted to this site's needs, here's how we could achieve a similar result 
+  with plain JavaScript. 
+
+  First, let's introduce the <strong>HTML</strong> section and its <strong>corresponding styles</strong> for a simple counter: 
+
+  <StaticCodeContainer>
+
+  ```html
+  index.html
+  ----------
+  // ...
+
+      <section id="counter">
+        <h1>Counter</h1>
+        <div id="body">
+          <output>0</output>
+          <button type="button">COUNT</button>
+        </div>
+      </section>
+
+  //...
+  ```
+
+  ---
+
+  ```css 
+  styles.css
+  ----------
+  #counter {
+  --background-color: hsl(0, 0%, 100%);
+  --border-color: hsl(0, 0%, 13%);
+  --shadow: 0 3px 6px hsla(0, 0%, 0%, 0.16), 0 3px 6px hsla(0, 0%, 0%, 0.23);
+  --text-color: hsl(0, 0%, 13%);
+  }
+
+  section#counter {
+    display: flex;
+    flex-direction: column;
+    background: var(--background-color);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+
+  #counter h1 {
+    background: var(--text-color);
+    color: var(--background-color);
+    font-size: 16px;
+    grid-area: top;
+    text-align: center;
+  }
+
+  #counter div#body {
+    display: flex;
+    gap: 16px;
+    padding: 16px;
+  }
+
+  #counter button {
+    background: var(--text-color);
+    border: none;
+    color: var(--background-color);
+    cursor: pointer;
+    font-size: 14px;
+    letter-spacing: 0.05em;
+    padding: 12px 24px;
+  }
+
+  #counter output {
+    border: 1px solid black;
+    font-weight: 700;
+    padding: 8px 16px;
+  }
+  ```
+
+  </StaticCodeContainer> 
+
+  Now, let's focus on the JavaScript part, which we'll keep as simple as the rest: 
+
+  <StaticCodeContainer> 
+
+  ```js
+  index.js
+  --------
+
+  (function () {
+    const button = document.querySelector("button");
+    const output = document.querySelector("output");
+
+    let count = 0;
+
+    button.onclick = function () {
+      count++;
+      output.textContent = count;
+    };
+  })();
+
+  /* Keep in mind that this is just one of the ways to 
+  achieve the expected result. It is not perfect, yet 
+  follows the basics of the language, as well as the 
+  ideas of GUI programming. 
+  Your applications do not have to be obscure nor 
+  complicated. For now, what matters is that they 
+  achieve the desired results. */
+  ```
+  </StaticCodeContainer> 
+
+  ---
+
+  ## 2. Temperature Converter 
+
+  ### Challenge
+  
+  Bidirectional data flow, user-provided text input.
+
+  ### Criteria:
+
+  The task is to build a frame containing 2 textfields representing the temperature in Celsius and Fahrenheit. 
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ Initially, <strong>both textfields</strong> are empty.
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ When the user enters a numerical value into a textfield, the corresponding value in the other is automatically updated. 
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ When the user enters a non-numerical string into a textfield, the value in the other is not updated.
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ Celsius to Fahrenheit formula F = C * (9/5) + 32.
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ Fahrenheit to Celsius formula: C = (F - 32) * (5/9).
+
+  Temperature Converter increases the complexity of Counter by having bidirectional data flow between the Celsius 
+  and Fahrenheit inputs and the need to check the user input for validity. A good solution will make the bidirectional 
+  dependency very clear with minimal boilerplate code.
+
+   <CodePreview
+    sandboxId="m82ywj"
+    previewHeight="400px"
+  />
+
+  ---
+
+  ## 3. Flight Booker 
+
+  <CodePreview
+    sandboxId="yh6xvl"
+    previewHeight="550px"
+  />
+
+  ---
+
+  ## 4. Timer 
+
+  <CodePreview
+    sandboxId="g4s5s2"
+    previewHeight="450px"
+  />
+
+  ---
+
+  ## 5. CRUD 
+
+  ---
+
+  ## 6. Circle Drawer 
+
+  ---
+
+  ## 7. Cells 
+
+  ---
 
   <div class="table-container">
   | Name  | Type   | Description                           |
   | ----- | ------ | ------------------------------------- |
   | title | string | The title to be set for the document. |
   </div>
+
+  <StaticCodeContainer>
+
+  </StaticCodeContainer>
+
 </div>
-
-<CodePreview
-  sandboxId={frontmatter.sandboxId}
-  previewHeight={frontmatter.previewHeight}
-/>
-
-<StaticCodeContainer>
-
-</StaticCodeContainer>
