@@ -34,13 +34,13 @@ import RelatedLesson from "../../components/RelatedLesson.astro";
 
   ## 1. Introduction 
 
-  A variable is a **binding** between a name and a value. A variable is:
+  A variable is a <span class="font-bold">binding</span> between a name and a value. A variable is:
 
-  &nbsp;&nbsp;&nbsp;&nbsp;▪ **declared** when a `const`, `let` or `var` keyword is used with a name: `let myVar`
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ <span class="font-bold">declared</span> when a `const`, `let` or `var` keyword is used with a name: `let myVar`
 
-  &nbsp;&nbsp;&nbsp;&nbsp;▪ **initialized** when an initial value is assigned to it: `myVar = 1`
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ <span class="font-bold">initialized</span> when an initial value is assigned to it: `myVar = 1`
 
-  &nbsp;&nbsp;&nbsp;&nbsp;▪ **reassigned** when its value changes: `myVar = 2`
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ <span class="font-bold">reassigned</span> when its value changes: `myVar = 2`
 
   Although you can declare and initialize a variable on the same line of code: 
   `let myVar = 1`, the engine will declare and initialize it in 2 different steps. 
@@ -53,27 +53,27 @@ import RelatedLesson from "../../components/RelatedLesson.astro";
     <img src="img/lesson/_arcade-metaphor.svg" alt="NES controller visual asset." width="200px" height="auto" align-items="center" />
   </div>
 
-  **Metaphor time:**
+  <span class="font-bold">Metaphor time:</span>
 
   Remember the old arcade era? Did you ever play consoles such as NES or old home computers 
   like Atari? 
-  Whatever the case, imagine that you have a NES at home where you can play **Donkey Kong**. 
+  Whatever the case, imagine that you have a NES at home where you can play <span class="font-bold">Donkey Kong</span>. 
   You are the owner of the console, the game belongs to you, and you set your own high score. 
   Independently of the time it takes you to play again, your high score remains there. 
 
   However, imagine there is also an arcade place nearby home. You do know the address, but 
-  nothing there belongs to you. You visit such an amazing space, play **Donkey Kong**, and get 
+  nothing there belongs to you. You visit such an amazing space, play <span class="font-bold">Donkey Kong</span>, and get 
   the high score. Some days later, however, your name doesn't appear anymore, as several 
   other players beat your marks. 
 
-  A **primitive binding** is similar to owning your own copy of **Donkey Kong** at home, which 
-  means that only you can set the high score. An **object binding**, however, is the arcade machine: 
+  A <span class="font-bold">primitive binding</span> is similar to owning your own copy of <span class="font-bold">Donkey Kong</span> at home, which 
+  means that only you can set the high score. An <span class="font-bold">object binding</span>, however, is the arcade machine: 
   you don't own it, and you only know the address of the place. Although you can set a high score, 
   so can others.
 
   ---
 
-  Now, let's remember that **JavaScript has 8 types**:
+  Now, let's remember that <span class="font-bold">JavaScript has 8 types</span>:
 
   &nbsp;&nbsp;&nbsp;&nbsp;▪ `null`
 
@@ -96,18 +96,18 @@ import RelatedLesson from "../../components/RelatedLesson.astro";
   <div class="table-container">
   | Example       | Explanation                                                                                                                                                                              |
   | ------------  | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-  | **Primitive** | When you assign a **primitive** to a variable, `let myVar = 1`, the value `1` is bound to the name `myVar`.                                                                              |
-  | **Object**    | When you assign an **object** to a variable, `let myVar = { a: 1 }`, the value isn't bound to myVar. Instead, an object reference is bound to `myVar`. The memory address of `{ a: 1 }`. |
+  | <span class="font-bold">Primitive</span> | When you assign a <span class="font-bold">primitive</span> to a variable, `let myVar = 1`, the value `1` is bound to the name `myVar`.                                                                              |
+  | <span class="font-bold">Object</span>    | When you assign an <span class="font-bold">object</span> to a variable, `let myVar = { a: 1 }`, the value isn't bound to myVar. Instead, an object reference is bound to `myVar`. The memory address of `{ a: 1 }`. |
   </div>
 
   <div style="display: flex; justify-content: center;">
     <img src="img/lesson/_object-reference.svg" alt="Example of object reference." width="500px" height="auto" align-items="center" />
   </div>
 
-  &nbsp;&nbsp;&nbsp;&nbsp;▪ **Example 1**. When assigning or passing variables of a primitive, a copy 
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ <span class="font-bold">Example 1</span>. When assigning or passing variables of a primitive, a copy 
   of the value is created.
 
-  &nbsp;&nbsp;&nbsp;&nbsp;▪ **Example 2**. When assigning or passing variables of an object, a copy of 
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ <span class="font-bold">Example 2</span>. When assigning or passing variables of an object, a copy of 
   the reference is created. If 2 variables are assigned the same object, changing the value of one will 
   change the other:
 
@@ -147,7 +147,7 @@ import RelatedLesson from "../../components/RelatedLesson.astro";
 
   </StaticCodeContainer>
 
-  **Note**: When comparing objects using the equality opertor, `===`, the results can be unintuitive. 
+  <span class="font-bold">Note</span>: When comparing objects using the equality opertor, `===`, the results can be unintuitive. 
   See [Referential Equality](/reference) for details. 
 
   ---
@@ -155,10 +155,10 @@ import RelatedLesson from "../../components/RelatedLesson.astro";
   ## 3. Redeclaring 
   
   Do you remember our dear [scopes](/scopes)? Taking this into account, you can redeclare a variable 
-  declared with `var` statement in the same scope or inner-outer scopes, as these variables are **global**.
+  declared with `var` statement in the same scope or inner-outer scopes, as these variables are <span class="font-bold">global</span>.
 
   However, when it comes to the variables declared with `let` and `const`, you can't redeclare these statements 
-  in the same scope - but you can do so in inner scopes, as variables with `let` and `const` are **block scope**:
+  in the same scope - but you can do so in inner scopes, as variables with `let` and `const` are <span class="font-bold">block scope</span>:
 
   <StaticCodeContainer>
 
@@ -226,8 +226,8 @@ import RelatedLesson from "../../components/RelatedLesson.astro";
   `undefined` is the default value of a variable or property. If we simply write `let myVar` and then 
   `console.log(myVar)`, that's the result we will have. 
 
-  Considering this, attempting to access a variable that hasn't been declared throws a **reference error**. 
-  Although the error states `myVar` is not defined, a more accurate description is `myVar` is **undeclared**.
+  Considering this, attempting to access a variable that hasn't been declared throws a <span class="font-bold">reference error</span>. 
+  Although the error states `myVar` is not defined, a more accurate description is `myVar` is <span class="font-bold">undeclared</span>.
 
   ---
 

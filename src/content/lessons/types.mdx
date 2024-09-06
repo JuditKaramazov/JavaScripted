@@ -51,7 +51,7 @@ import RelatedLesson from "../../components/RelatedLesson.astro";
 
   Remember, however, that in JavaScript, the `Number` type cannot safely represent integer values larger 
   than 253. This limitation forced developers to use inefficient workarounds and third-party libraries 
-  until they incorporated `BigInt` as a **numeric data type** intended to address that problem.
+  until they incorporated `BigInt` as a <span class="font-bold">numeric data type</span> intended to address that problem.
 
   <div class="table-container">
   | Name   | Description                                                                             |
@@ -59,7 +59,7 @@ import RelatedLesson from "../../components/RelatedLesson.astro";
   | bigint | Stores integer values that are too big to be represented by a normal JavaScript Number. |
   </div>
 
-  **Note**: Detailed information in the following section:
+  <span class="font-bold">Note</span>: Detailed information in the following section:
 
   ▪ [JavaScript Variables](/variables)
 
@@ -131,7 +131,7 @@ import RelatedLesson from "../../components/RelatedLesson.astro";
   ### Date
 
   The `Date(..)` constructor accepts optional arguments to specify the date/time to use. Format used below is 
-  ISO 8601 format - **YYYY-MM-DDTHH:mm:ss.sssZ** (international standard). 
+  ISO 8601 format - <span class="font-bold">YYYY-MM-DDTHH:mm:ss.sssZ</span> (international standard). 
   
   <StaticCodeContainer>
 
@@ -292,7 +292,7 @@ import RelatedLesson from "../../components/RelatedLesson.astro";
   ## 4. Boxing
 
   A primitive like `“abc”` is not an object. However, you can call methods on it like `"abc".length`. This is possible through a 
-  technique called **boxing**. When the interpreter sees a property or method call on a primitive, it calls the constructor form 
+  technique called <span class="font-bold">boxing</span>. When the interpreter sees a property or method call on a primitive, it calls the constructor form 
   and passes in the primitive value, creating an object. This object has properties and methods linked to it via the prototype chain.
 
   <div style="display: flex; justify-content: center;">
@@ -345,14 +345,14 @@ import RelatedLesson from "../../components/RelatedLesson.astro";
 
   </StaticCodeContainer>
 
-  **Note**: variables don't have types. Only values do. When using `typeof` against a variable, it is like asking: "What's the type of the 
+  <span class="font-bold">Note</span>: variables don't have types. Only values do. When using `typeof` against a variable, it is like asking: "What's the type of the 
   value in this variable?"
 
   ### Object Subtypes 
 
   Let's analyze a couple of cases now: 
 
-  ▪ **[[Class]]** 
+  ▪ <span class="font-bold">[[Class]]</span> 
 
   Objects are tagged with an internal `[[Class]]` property. A classification (not related to class-oriented coding) corresponding to the built-in 
   native constructor. It can only be accessed through `Object.prototype.toString(..)`: 
@@ -382,7 +382,7 @@ import RelatedLesson from "../../components/RelatedLesson.astro";
 
   </StaticCodeContainer>
 
-  ▪ **instanceof** 
+  ▪ <span class="font-bold">instanceof</span> 
 
   The `instanceof` operator tests to see if the prototype property of a constructor appears anywhere in the prototype chain of an object:
 

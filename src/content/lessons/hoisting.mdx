@@ -35,7 +35,7 @@ import RelatedLesson from "../../components/RelatedLesson.astro";
 
   ## 1. Introduction
 
-  **Note**: If you are unfamiliar with the terminology below, check out:
+  <span class="font-bold">Note</span>: If you are unfamiliar with the terminology below, check out:
 
   &nbsp;&nbsp;&nbsp;&nbsp;▪ [JavaScript Variables](/variables)
 
@@ -43,7 +43,7 @@ import RelatedLesson from "../../components/RelatedLesson.astro";
 
   ---
 
-  An **identifier** is a sequence of characters in the code that identifies a `variable`, 
+  An <span class="font-bold">identifier</span> is a sequence of characters in the code that identifies a `variable`, 
   `function`, or `property`. Let's see an example: the `myVar` string in `var myVar = 1`. 
   Every time the compiler enters a scope, it starts registering declarations. Each 
   identifier will be moved to the top of a scope. This is known as `hoisting`. What scope 
@@ -59,14 +59,14 @@ import RelatedLesson from "../../components/RelatedLesson.astro";
     <img src="img/lesson/_library-metaphor.svg" alt="Pile of books and coffee on top visual asset." width="150px" height="auto" align-items="center" />
   </div>
 
-  **Metaphor time:**
+  <span class="font-bold">Metaphor time:</span>
 
   Imagine you're working in a messy library. Books are literally everywhere and you can put them wherever 
   you want. However, when a real professional joins the team, they move everything and place narrative books 
   on a certain shelf, poetry ones on a different one, and so on.
 
   Your messy (and clearly unprofessional) library is the scope, all kinds of books are identifiers, 
-  and the **real** professional is the compiler. While coding, we can put identifiers wherever we want in the 
+  and the <span class="font-bold">real</span> professional is the compiler. While coding, we can put identifiers wherever we want in the 
   scope, but when the compiler enters the scope, it moves them to their right place.
 
   That's hoisting.
@@ -127,7 +127,7 @@ import RelatedLesson from "../../components/RelatedLesson.astro";
 
   ## 3. var 
 
-  A `var`-declared identifier will move the top of the nearest **function scope**. If none is available, then global 
+  A `var`-declared identifier will move the top of the nearest <span class="font-bold">function scope</span>. If none is available, then global 
   or module scope. It will also be initialized to its default value of `undefined` and can be used. Even if you declare 
   and initialize the variable on the same line, `var myVar = 1`, only the identifier is hoisted. The variable will be 
   initialized to its correct value when the line of code is executed. 
@@ -180,7 +180,7 @@ import RelatedLesson from "../../components/RelatedLesson.astro";
 
   ## 4. const, let and class
 
-  A `const`, `let` or `class`-declared identifier will move the top of the nearest **block scope**. If none 
+  A `const`, `let` or `class`-declared identifier will move the top of the nearest <span class="font-bold">block scope</span>. If none 
   available, the nearest parent scope. It will also be initialized to its default value of `uninitialized`. 
   It will remain uninitialized until the compiler executes the line where is it declared. Attempting to 
   use it before then results in an error.
@@ -196,10 +196,10 @@ import RelatedLesson from "../../components/RelatedLesson.astro";
   let myVar = 1;
   ```
 
-  we'll receive the following error: **"Uncaught ReferenceError: Cannot access 'myVar' before initialization"**. 
+  we'll receive the following error: <span class="font-bold">"Uncaught ReferenceError: Cannot access 'myVar' before initialization"</span>. 
   Why is that happening?
 
-  The above is an example of **The Temporal Dead Zone**. A window of time where a variable is declared but uninitialized. 
+  The above is an example of <span class="font-bold">The Temporal Dead Zone</span>. A window of time where a variable is declared but uninitialized. 
   When a `var` is hoisted, it is initialized with a default value of `undefined`, so it has a TDZ of 0 in length and 
   unobservable. `let`, `const` and `class` have an observable TDZ:
 
@@ -248,7 +248,7 @@ import RelatedLesson from "../../components/RelatedLesson.astro";
 
   </StaticCodeContainer>
 
-  Also, keep in mind that **rules of scope**, such as **hoisting**, are applied per scope instance. During execution, 
+  Also, keep in mind that <span class="font-bold">rules of scope</span>, such as <span class="font-bold">hoisting</span>, are applied per scope instance. During execution, 
   each time a scope is entered, everything resets. This is why using a `const` within a loop doesn't throw an already 
   declared error after the 1st iteration.
 
@@ -257,7 +257,7 @@ import RelatedLesson from "../../components/RelatedLesson.astro";
 
   ## 5. Documentation
 
-  Do you want to know more about **scopes and closures**? Here, you'll find a [dedicated "You don't know JavaScript" chapter for it](https://github.com/getify/You-Dont-Know-JS/blob/2nd-ed/scope-closures/README.md).
+  Do you want to know more about <span class="font-bold">scopes and closures</span>? Here, you'll find a [dedicated "You don't know JavaScript" chapter for it](https://github.com/getify/You-Dont-Know-JS/blob/2nd-ed/scope-closures/README.md).
 
   ---
 

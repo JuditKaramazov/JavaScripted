@@ -14,13 +14,13 @@ import StaticCodeContainer from "../../components/StaticCodeContainer.astro";
 import RelatedLesson from "../../components/RelatedLesson.astro";
 
 <LessonDescription name={frontmatter.name}>
-  **POLP** (also known as "Principle of Least Privilege") states components of a 
+  <span class="font-bold">POLP</span> (also known as "Principle of Least Privilege") states components of a 
   system should be designed to function with the least privilege, access, and exposure. 
   This makes the overall system stronger from a security standpoint. A compromise 
   or failure of 1 piece has a minimized impact on the rest of the system. Other 
   benefits include avoiding naming collisions, unexpected behavior, and unintended 
   dependencies. For each piece, default to exposing the minimum. Keep everything 
-  else private. **A scope enables control of a declaration's exposure**.
+  else private. <span class="font-bold">A scope enables control of a declaration's exposure</span>.
 </LessonDescription>
 
 ## Table of Contents
@@ -38,8 +38,8 @@ import RelatedLesson from "../../components/RelatedLesson.astro";
 <div class="reference">
   ## 1. Levels
 
-  In JavaScript, scopes are determined at compile time. This is known as **lexical 
-  scope**. Each scope can only access declaration within itself or in parent scopes. 
+  In JavaScript, scopes are determined at compile time. This is known as <span class="font-bold">lexical 
+  scope</span>. Each scope can only access declaration within itself or in parent scopes. 
   However, during compliation, declarations may move to a different scope. 
   
   There are 4 levels of scope:
@@ -50,7 +50,7 @@ import RelatedLesson from "../../components/RelatedLesson.astro";
   />
 
   <div class="table-container">
-  | **Scope**     | **Description**                                                                                                                                                                                                                         |
+  | <span class="font-bold">Scope</span>     | <span class="font-bold">Description</span>                                                                                                                                                                                                                         |
   | ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
   | Global        | If a .js file is being imported into a .html file, its outer most scope is the global scope. Although the function arguments are highlighted, they aren't included in the global scope. Details below.                                  |
   | Module        | If the HTML tag importing the .js file has the module type attribute, <script type="module" src="index.js"></script>, its outer most scope is no longer the global scope, but a module scope.                                           |
@@ -71,7 +71,7 @@ import RelatedLesson from "../../components/RelatedLesson.astro";
   scope either. When compiled, the location of arguments can be thought of as being 
   in a new scope that wraps the function.
 
-  Let's see **two different examples** (1 and 2) before and after compile:
+  Let's see <span class="font-bold">two different examples</span> (1 and 2) before and after compile:
 
   <StaticCodeContainer>
 
@@ -241,7 +241,7 @@ import RelatedLesson from "../../components/RelatedLesson.astro";
 
   An application could include many global variables and functions from different source 
   files. Limiting the number of these prevents problems like name collisions. One way to do 
-  this is to use an **IIFE (Immediately Invoked Function Expression)**. Commonly used for 
+  this is to use an <span class="font-bold">IIFE (Immediately Invoked Function Expression)</span>. Commonly used for 
   initiating code (code that runs as soon as the JavaScript loads), it is a function that:
 
    &nbsp;&nbsp;&nbsp;&nbsp;▪ is invoked as soon as it is defined,
