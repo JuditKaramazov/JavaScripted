@@ -91,8 +91,10 @@ import RelatedLesson from "../../components/RelatedLesson.astro";
     console.log('This function has been hoisted.');
   };
 
-  /* Now, we can see why JavaScript enables us to 
-  invoke a function seemingly before declaring it. */
+  /* 
+  Now, we can see why JavaScript enables us to 
+  invoke a function seemingly before declaring it. 
+  */
   ```
 
   ---
@@ -100,8 +102,10 @@ import RelatedLesson from "../../components/RelatedLesson.astro";
   ```js
   index.js
   -------- 
-  /* However, function expressions are not 
-  hoisted: */
+  /* 
+  However, function expressions are not 
+  hoisted: 
+  */
 
   expression(); // Output: "TypeError: expression is not a function"
 
@@ -150,10 +154,12 @@ import RelatedLesson from "../../components/RelatedLesson.astro";
   ```js
   index.js
   -------- 
-  /* Below is an example of a variable declared 
+  /* 
+  Below is an example of a variable declared 
   and initialized in a block scope. Because it's 
   declared as a var, it is hoisted to the 
-  function scope: */
+  function scope: 
+  */
 
   function myFunc(x) {
     if (x === 1) {
