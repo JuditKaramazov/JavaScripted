@@ -182,9 +182,9 @@ import StaticCodeContainer from "../../components/StaticCodeContainer.astro";
 
   &nbsp;&nbsp;&nbsp;&nbsp;▪ Initially, <span class="font-bold">both textfields</span> are empty.
 
-  &nbsp;&nbsp;&nbsp;&nbsp;▪ When the user enters a numerical value into a textfield, the corresponding value in the other is automatically updated. 
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ When the user enters a <span class="font-bold">numerical</span> value into a textfield, the <span class="font-bold">corresponding value in the other is automatically updated</span>. 
 
-  &nbsp;&nbsp;&nbsp;&nbsp;▪ When the user enters a non-numerical string into a textfield, the value in the other is not updated.
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ When the user enters a <span class="font-bold">non-numerical string</span> into a textfield, the <span class="font-bold">value in the other is not updated</span>.
 
   &nbsp;&nbsp;&nbsp;&nbsp;▪ Celsius to Fahrenheit formula F = C * (9/5) + 32.
 
@@ -192,25 +192,478 @@ import StaticCodeContainer from "../../components/StaticCodeContainer.astro";
 
   Temperature Converter increases the complexity of Counter by having bidirectional data flow between the Celsius 
   and Fahrenheit inputs and the need to check the user input for validity. A good solution will make the bidirectional 
-  dependency very clear with minimal boilerplate code.
+  dependency <span class="font-bold">very clear with minimal boilerplate code</span>.
 
    <CodePreview
     sandboxId="m82ywj"
     previewHeight="400px"
   />
 
+  Let's see what happens now when it comes to the <span class="font-bold">HTML and CSS part</span>: 
+
+  <StaticCodeContainer> 
+
+  ```html
+  index.html
+  ----------
+  // ...
+
+  <form id="tempConverter">
+    <h1>Temperature Converter</h1>
+      <div class="row">
+        <input id="celsius" oninput="onCelsiusInput(event)" step=".01" type="number" autofocus />
+        <label for="celsius">Celsius</label>&nbsp;=
+        <input id="fahrenheit" oninput="onFahrenheitInput(event)" step=".01" type="number" />
+        <label for="fahrenheit">Fahrenheit</label>
+      </div>
+  </form>
+
+  //...
+  ```
+
+  ---
+
+  ```css
+  styles.css
+  ----------
+
+  #tempConverter {
+    --background-color: hsl(0, 0%, 100%);
+    --border-color: hsl(0, 0%, 13%);
+    --shadow: 0 3px 6px hsla(0, 0%, 0%, 0.16), 0 3px 6px hsla(0, 0%, 0%, 0.23);
+    --text-color: hsl(0, 0%, 13%);
+  }
+
+  form#tempConverter {
+    display: flex;
+    flex-direction: column;
+    background: var(--background-color);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+
+  #tempConverter h1 {
+    background: var(--text-color);
+    color: var(--background-color);
+    font-size: 16px;
+    text-align: center;
+  }
+
+  #tempConverter div.row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+  }
+
+  #tempConverter label {
+    cursor: pointer;
+  }
+
+  #tempConverter input {
+    width: 100%;
+    background: transparent;
+    border: 1px solid var(--text-color);
+    padding: 8px 16px;
+  }
+  ```
+
+  </StaticCodeContainer>
+
+  And the <span class="font-bold">JavaScript</span> logic behind it:
+
+  <StaticCodeContainer>
+  ```js
+  index.js
+  --------
+  const CEL_ID = "celsius";
+  const celInput = document.querySelector(`#${CEL_ID}`);
+  const farInput = document.querySelector("#fahrenheit");
+
+  function celToFar(cel) {
+    return (cel * 9) / 5 + 32;
+  }
+
+  function farToCel(far) {
+    return ((far - 32) * 5) / 9;
+  }
+
+  function formatVal(value) {
+    return value.toFixed(2);
+  }
+
+  function changeInputVal(elem, value) {
+    elem.value = formatVal(value);
+  }
+
+  function clearInput(elem) {
+    elem.value = "";
+  }
+
+  function onInput(event) {
+    const { value, id } = event.target;
+    const otherInput = id === CEL_ID ? farInput : celInput;
+
+    if (value === "") {
+      clearInput(otherInput);
+      return;
+    }
+
+    {
+      const otherValue = id === CEL_ID ? celToFar(value) : farToCel(value);
+      changeInputVal(otherInput, otherValue);
+    }
+  }
+
+  celInput.oninput = onInput;
+  farInput.oninput = onInput;
+  ```
+  </StaticCodeContainer>
+
+  Now, coffee break before we keep going! 
+
   ---
 
   ## 3. Flight Booker 
+
+  ### Challenge 
+
+  The simplification of using textfields for date input instead of specialized date picking widgets.
+
+  ### Criteria
+
+  The task is to build a frame containing a <span class="font-bold">combobox with two options</span> (“one-way flight” and 
+  “return flight”), <span class="font-bold">two textfields</span> representing the <span class="font-bold">start and 
+  return</span> date, and a <span class="font-bold">button for submitting</span> the selected flight.
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ The return textfield is <span class="font-bold">enabled</span> if the combobox’s value is “return flight”.
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ When the “return flight” <span class="font-bold">date is strictly before time</span>, it's not possible to submit.
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ When there is a <span class="font-bold">wrong-formatted date</span>, then it is colored red and the submit button is disabled.
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ When submitting, <span class="font-bold">a message is displayed</span> informing the user of their selection.
+  
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ Initially, the combobox has the <span class="font-bold">value “one-way flight”</span>, and both textfields have the same (arbitrary) date. It is implied that the return textfield is disabled.
+
+  The focus of Flight Booker lies on modelling constraints between widgets on the one hand and modelling constraints within a 
+  widget on the other hand. Such constraints are very common in everyday interactions with GUI applications, and a good solution 
+  for Flight Booker will make the constraints clear, succinct and explicit in the source code, not hidden behind a lot of scaffolding.
 
   <CodePreview
     sandboxId="yh6xvl"
     previewHeight="550px"
   />
 
+    Now, let’s delve into the <span class="font-bold">HTML</span> section and its <span class="font-bold">corresponding 
+  styles</span>: 
+
+  <StaticCodeContainer> 
+
+  ```html
+  index.html
+  ----------
+  // ...
+
+  <form id="flightBooker">
+    <h1>Flight Booker</h1>
+    <div id="body">
+      <label for="oneWayOrReturn">One way or return:</label>
+      <select id="oneWayOrReturn">
+        <option value="oneWay">one-way flight</option>
+        <option value="returnFlight">return flight</option>
+      </select>
+      <label for="departure">Departure Date (format: DD.MM.YYYY):</label>
+      <input id="departure" value="25.12.1999" />
+      <label for="return">Return Date (format: DD.MM.YYYY):</label>
+      <input disabled id="return" value="25.12.1999" />
+      <button id="book" type="submit">BOOK</button>
+    </div>
+  </form>
+
+  //...
+  ```
+
+  ---
+
+  ```css
+  styles.css
+  ----------
+
+  #flightBooker {
+    --background-color: hsl(0, 0%, 100%);
+    --border-color: hsl(0, 0%, 13%);
+    --text-color: hsl(0, 0%, 13%);
+    --shadow: 0 3px 6px hsla(0, 0%, 0%, 0.16), 0 3px 6px hsla(0, 0%, 0%, 0.23);
+  }
+
+  form#flightBooker {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 340px;
+    background: var(--background-color);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+
+  #flightBooker h1 {
+    background: var(--text-color);
+    color: var(--background-color);
+    font-size: 16px;
+    text-align: center;
+  }
+
+  #flightBooker div#body {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 16px;
+  }
+
+  #flightBooker label {
+    font-size: 14px;
+  }
+
+  #flightBooker input,
+  #flightBooker select {
+    margin: 4px 0 24px 0;
+    background: transparent;
+    border: 1px solid var(--text-color);
+    padding: 8px 16px;
+  }
+
+  #flightBooker input[aria-invalid="true"] {
+    background: tomato;
+  }
+
+  #flightBooker select {
+    cursor: pointer;
+  }
+
+  #flightBooker button {
+    background: var(--text-color);
+    border: none;
+    color: var(--background-color);
+    font-size: 14px;
+    letter-spacing: 0.05em;
+    padding: 12px 24px;
+    cursor: pointer;
+  }
+
+  #flightBooker input:disabled,
+  #flightBooker button:disabled {
+    opacity: 0.3;
+    pointer-events: none;
+  }
+  ```
+
+  </StaticCodeContainer>
+
+  Now, as for the <span class="font-bold">JavaScript part</span>, let's keep it simple:
+
+  <StaticCodeContainer>
+
+  ```js
+  index.js
+  --------
+  const ARIA_INVALID = "aria-invalid";
+
+  const oneWayOrReturnValues = {
+    oneWay: "oneWay",
+    returnFlight: "returnFlight",
+  };
+
+  const elems = {
+    departure: document.querySelector("#departure"),
+    oneWayOrReturn: document.querySelector("#oneWayOrReturn"),
+    return: document.querySelector("#return"),
+    book: document.querySelector("#book"),
+  };
+
+  // DOM setters.
+  function setError(elem) {
+    elem.setAttribute(ARIA_INVALID, true);
+  }
+
+  function clearError(elem) {
+    elem.setAttribute(ARIA_INVALID, false);
+  }
+
+  function disable(elem) {
+    elem.disabled = true;
+  }
+
+  function enable(elem) {
+    elem.disabled = false;
+  }
+
+  function showConfirmation() {
+    const message =
+      elems.oneWayOrReturn.value === oneWayOrReturnValues.oneWay
+        ? `You have booked a one-way flight on ${elems.departure.value}.`
+        : `You have booked a return flight, departing on ${elems.departure.value} & returning on ${elems.return.value}.`;
+
+    window.alert(message);
+  }
+
+  // Validators.
+  function isOneWay() {
+    return elems.oneWayOrReturn.value === oneWayOrReturnValues.oneWay;
+  }
+
+  function isValidDate(date) {
+    return date instanceof Date && !isNaN(date);
+  }
+
+  function inputValueToDate(value) {
+    const split = value.split(".");
+    const [day, month, year] = split;
+
+    return new Date(`${year}-${month}-${day}`);
+  }
+
+  function isBadFormat(value) {
+    const split = value.split(".");
+
+    if (split.length !== 3) return true;
+
+    const date = inputValueToDate(value);
+
+    return !isValidDate(date);
+  }
+
+  function isEarlyReturn() {
+    const start = inputValueToDate(elems.departure.value).valueOf();
+    const end = inputValueToDate(elems.return.value).valueOf();
+
+    return end < start;
+  }
+
+  // State.
+  const states = {
+    oneWay: {
+      badDepartureFormat: "oneWay.BadDepartureFormat",
+      valid: "oneWay.valid",
+    },
+    returnFlight: {
+      badDepartureFormat: "returnFlight.badDepartureFormat",
+      badReturnFormat: "returnFlight.badReturnFormat",
+      badDepartureAndReturnFormat: "returnFlight.badDepartureAndReturnFormat",
+      earlyReturn: "returnFlight.earlyReturn",
+      valid: "returnFlight.valid",
+    },
+  };
+
+  function onStateChange(state) {
+    switch (state) {
+      case states.oneWay.badDepartureFormat:
+        disable(elems.book);
+        disable(elems.return);
+        setError(elems.departure);
+        clearError(elems.return);
+        break;
+
+      case states.oneWay.valid:
+        enable(elems.book);
+        disable(elems.return);
+        clearError(elems.departure);
+        clearError(elems.return);
+        break;
+
+      case states.returnFlight.badDepartureAndReturnFormat:
+        disable(elems.book);
+        enable(elems.return);
+        setError(elems.departure);
+        setError(elems.return);
+        break;
+
+      case states.returnFlight.badDepartureFormat:
+        disable(elems.book);
+        enable(elems.return);
+        setError(elems.departure);
+        clearError(elems.return);
+        break;
+
+      case states.returnFlight.badReturnFormat:
+        disable(elems.book);
+        enable(elems.return);
+        clearError(elems.departure);
+        setError(elems.return);
+        break;
+
+      case states.returnFlight.earlyReturn:
+        disable(elems.book);
+        enable(elems.return);
+        clearError(elems.departure);
+        setError(elems.return);
+        break;
+
+      case states.returnFlight.valid:
+        enable(elems.book);
+        enable(elems.return);
+        clearError(elems.departure);
+        clearError(elems.return);
+        break;
+
+      default:
+        throw Error(`Unknown state: ${state}`);
+    }
+  }
+
+  function calcState() {
+    const isBadDepart = isBadFormat(elems.departure.value);
+    const isBadReturn = isBadFormat(elems.return.value);
+
+    if (isOneWay()) {
+      return isBadDepart ? states.oneWay.badDepartureFormat : states.oneWay.valid;
+    }
+
+    if (isBadDepart && isBadReturn) {
+      return states.returnFlight.badDepartureAndReturnFormat;
+    }
+
+    if (isBadDepart) {
+      return states.returnFlight.badDepartureFormat;
+    }
+
+    if (isBadReturn) {
+      return states.returnFlight.badReturnFormat;
+    }
+
+    if (isEarlyReturn()) {
+      return states.returnFlight.earlyReturn;
+    }
+
+    return states.returnFlight.valid;
+  }
+
+  function onInputChange() {
+    const state = calcState();
+    onStateChange(state);
+  }
+
+  // DOM listeners.
+  elems.oneWayOrReturn.onchange = onInputChange;
+  elems.departure.oninput = onInputChange;
+  elems.return.oninput = onInputChange;
+
+  elems.book.onclick = function (event) {
+    event.preventDefault();
+    showConfirmation();
+  };
+  ```
+  </StaticCodeContainer>
+
   ---
 
   ## 4. Timer 
+
+  ### Challenge
+
+  ### Criteria
 
   <CodePreview
     sandboxId="g4s5s2"
@@ -221,6 +674,10 @@ import StaticCodeContainer from "../../components/StaticCodeContainer.astro";
 
   ## 5. CRUD
 
+  ### Challenge
+
+  ### Criteria
+
   <CodePreview
     sandboxId="k2v2vt"
     previewHeight="600px"
@@ -230,29 +687,41 @@ import StaticCodeContainer from "../../components/StaticCodeContainer.astro";
 
   ## 6. Circle Drawer 
 
+  ### Challenge
+
+  ### Criteria
+
   <CodePreview
     sandboxId="q6xmhn"
-    previewHeight="500px"
+    previewHeight="620px"
   />
-
 
 
   ---
 
   ## 7. Cells 
 
+  ### Challenge
+
+  ### Criteria
+
    <CodePreview
     sandboxId="fljwpf"
-    previewHeight="600px"
+    previewHeight="700px"
   />
+
+  <div class="table-container">
+  | Formula   | Example             | Description                             |
+  | --------- | ------------------- | --------------------------------------- |
+  | Sum       | `=SUM(B2:B3)`       | Calculates the sum of a range of cells. |
+  | Subtract  | `=SUBTRACT(A2, B2)` | Subtracts one value from another.       |
+  | Multiply  | `=MULTIPLY(A2, B2)` | Multiplies two values.                  |
+  | Divide    | `=DIVIDE(A2, B2)`   | Divides one value by another.           |
+</div>
+
 
   ---
 
-  <div class="table-container">
-  | Name  | Type   | Description                           |
-  | ----- | ------ | ------------------------------------- |
-  | title | string | The title to be set for the document. |
-  </div>
 
   <StaticCodeContainer>
 
