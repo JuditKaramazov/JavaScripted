@@ -49,10 +49,10 @@ import StaticCodeContainer from "../../components/StaticCodeContainer.astro";
   
   &nbsp;&nbsp;&nbsp;&nbsp;▪ Each click of the button <span class="font-bold">increases the value</span> in textfield by 1. 
 
-  Counter serves as a gentle introduction to the basics of the language, paradigm and toolkit for one of 
+  Counter serves as a gentle introduction to the basics of the language, paradigm, and toolkit for one of 
   the simplest GUI applications imaginable. Thus, Counter reveals the required scaffolding and how the 
-  very basic features work together to build a GUI application. A good solution will have almost no 
-  scaffolding:
+  <span class="font-bold">very basic features work together to build a GUI application</span>. A good solution 
+  will have almost no scaffolding:
 
   <CodePreview
     sandboxId={frontmatter.sandboxId}
@@ -345,9 +345,9 @@ import StaticCodeContainer from "../../components/StaticCodeContainer.astro";
   
   &nbsp;&nbsp;&nbsp;&nbsp;▪ Initially, the combobox has the <span class="font-bold">value “one-way flight”</span>, and both textfields have the same (arbitrary) date. It is implied that the return textfield is disabled.
 
-  The focus of Flight Booker lies on modelling constraints between widgets on the one hand and modelling constraints within a 
-  widget on the other hand. Such constraints are very common in everyday interactions with GUI applications, and a good solution 
-  for Flight Booker will make the constraints clear, succinct and explicit in the source code, not hidden behind a lot of scaffolding.
+  The focus of Flight Booker lies on <span class="font-bold">modelling constraints between widgets</span> on the one hand, and <span class="font-bold">modelling 
+  constraints within a widget</span> on the other hand. Such constraints are very common in everyday interactions with GUI applications, and a good solution 
+  for Flight Booker should make the constraints clear, succinct, and explicit in the source code, not hidden behind a lot of scaffolding.
 
   <CodePreview
     sandboxId="yh6xvl"
@@ -685,8 +685,8 @@ import StaticCodeContainer from "../../components/StaticCodeContainer.astro";
   &nbsp;&nbsp;&nbsp;&nbsp;▪ Clicking the reset button will <span class="font-bold">reset the elapsed time to zero</span>.
 
   Timer deals with concurrency in the sense that a timer process that updates the elapsed time runs concurrently to the user's interactions 
-  with the GUI application. Also, the fact that the slider adjustments must be reflected immediately tests the responsiveness of the solution, 
-  forcing us to make it clear that the signal is a timer tick.
+  with the GUI application. Also, the fact that the slider adjustments must be reflected immediately <span class="font-bold">tests the responsiveness 
+  of the solution</span>, forcing us to make it clear that the signal is a timer tick.
 
   <CodePreview
     sandboxId="g4s5s2"
@@ -904,39 +904,1479 @@ import StaticCodeContainer from "../../components/StaticCodeContainer.astro";
 
   ### Challenge
 
+  Separating the domain and presentation logic, managing mutation, building a non-trivial layout.
+
   ### Criteria
+
+  In this case, we'll build a frame containing <span class="font-bold">prefix, name, and surname textfields</span> (with labels), a <span class="font-bold">list box</span>, 
+  and <span class="font-bold">buttons allowing to create, update, and delete</span> the data.
+
+  <span class="font-bold">List box</span>:
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ The list box will present a view of the data in the database that consists of a list of names.
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ At most one entry can be selected in the box at a time.
+
+  <span class="font-bold">Textfield</span>: 
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ By entering a string into the prefix textfield, the user can filter the names whose surname start with the entered prefix.
+
+  <span class="font-bold">Buttons</span>: 
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ Clicking the <span class="font-bold">create button</span> will append the resulting name from concatenating the strings in the name and surname textfields to the list box.
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ The <span class="font-bold">update and delete buttons</span> are enabled if an entry in the list box is selected. 
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ In contrast to the create button, the <span class="font-bold">update button</span> will not append the resulting name but instead replace the selected entry with the new name.
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ The <span class="font-bold">delete button</span> will remove the selected entry.
+
+  <span class="font-bold">CRUD (Create, Read, Update, and Delete)</span> represents a typical graphical business application. The primary challenge is the <span class="font-bold">separation of domain 
+  and presentation logic</span> in the source code that is more or less forced on the implementer due to the ability to filter the view by a prefix.
+  
+  What matters the most here is that the approach to managing the mutation of the list of names is tested, and a good solution should have a <span class="font-bold">clear separation between the domain 
+  and presentation logic</span> without much overhead, a <span class="font-bold">mutation management</span> that is fast but not error-prone, and a <span class="font-bold">natural representation of the 
+  layout</span>.
 
   <CodePreview
     sandboxId="k2v2vt"
     previewHeight="600px"
   />
 
+  Let's see how to achieve it by starting with the <span class="font-bold">HTML and its according styles</span>: 
+
+  <StaticCodeContainer> 
+
+  ```html
+  index.html
+  ----------
+  // ...
+
+  <form id="crud">
+    <h1>CRUD</h1>
+    <div id="body">
+      <div id="filterLayout">
+        <label for="filter">Filter prefix:</label>
+        <input id="filter" />
+      </div>
+      <ol id="listBox"></ol>
+      <div id="names">
+        <label for="name">Name:</label>
+        <input id="name" />
+        <label for="surname">Surname:</label>
+        <input id="surname" />
+        </div>
+        <div id="buttons">
+          <button id="create" type="button">CREATE</button>
+          <button id="update" type="button" disabled>UPDATE</button>
+          <button id="delete" type="button" disabled>DELETE</button>
+        </div>
+      </div>
+    </form>
+
+  //...
+  ```
+
+  ---
+
+  ```css
+  styles.css
+  ----------
+  #crud {
+    --background-color: hsl(0, 0%, 100%);
+    --border-color: hsl(0, 0%, 13%);
+    --shadow: 0 3px 6px hsla(0, 0%, 0%, 0.16), 0 3px 6px hsla(0, 0%, 0%, 0.23);
+    --text-color: hsl(0, 0%, 13%);
+  }
+
+  form#crud {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 640px;
+    height: 340px;
+    background: var(--background-color);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+
+  #crud h1 {
+    background: var(--text-color);
+    color: var(--background-color);
+    font-size: 16px;
+    text-align: center;
+  }
+
+  #crud div#body {
+    display: grid;
+    grid:
+      "filter ." auto
+      "listbox names" 1fr
+      "buttons buttons" auto
+      / 1fr 1fr;
+    grid-gap: 16px;
+    flex-grow: 1;
+    padding: 16px;
+  }
+
+  #crud div#filterLayout {
+    display: flex;
+    align-items: center;
+    grid-area: filter;
+    justify-content: space-between;
+  }
+
+  #crud ol#listBox {
+    grid-area: listbox;
+    border: 1px solid var(--text-color);
+    list-style: none;
+    overflow: auto;
+  }
+
+  #crud ol#listBox > li {
+    overflow: hidden;
+    padding: 8px 16px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+
+  #crud ol#listBox > li.selected {
+    background: var(--text-color);
+    color: var(--background-color);
+    pointer-events: none;
+  }
+
+  #crud ol#listBox > li.hide {
+    display: none;
+  }
+
+  #crud div#names {
+    grid-area: names;
+    display: grid;
+    grid:
+      ". ." auto
+      ". ." auto
+      / auto auto;
+    grid-gap: 8px;
+    align-content: start;
+  }
+
+  #crud div#buttons {
+    grid-area: buttons;
+  }
+
+  #crud input {
+    width: 100%;
+    max-width: 160px;
+    margin-left: 8px;
+    background: transparent;
+    border: 1px solid var(--text-color);
+    padding: 8px 16px;
+  }
+
+  #crud label {
+    white-space: nowrap;
+  }
+
+  #crud button {
+    background: var(--text-color);
+    border: none;
+    color: var(--background-color);
+    font-family: inherit;
+    font-size: 14px;
+    letter-spacing: 0.05em;
+    padding: 12px 24px;
+    cursor: pointer;
+  }
+
+  #crud button:disabled {
+    opacity: 0.3;
+    pointer-events: none;
+  }
+  ```
+  </StaticCodeContainer> 
+
+  Now, the <span class="font-bold">JavaScript</span> part could look somehow like this: 
+
+  <StaticCodeContainer>
+
+  ```js
+  index.js
+  --------
+  (function () {
+    let selected = null;
+
+    const classes = {
+      hide: "hide",
+      selected: "selected",
+    };
+
+    const names = {};
+
+    const elems = {
+      create: document.querySelector("button#create"),
+      delete: document.querySelector("button#delete"),
+      filter: document.querySelector("input#filter"),
+      listBox: document.querySelector("ol#listBox"),
+      name: document.querySelector("input#name"),
+      surname: document.querySelector("input#surname"),
+      update: document.querySelector("button#update"),
+    };
+
+    // Validators.
+    function isValidInput(value) {
+      return typeof value === "string" && value.length > 0;
+    }
+
+    function isValidNameInputValues() {
+      const name = elems.name.value;
+      const surname = elems.surname.value;
+
+      return isValidInput(name) && isValidInput(surname);
+    }
+
+    function isValidFilterInputValue() {
+      const { value } = elems.filter;
+
+      return isValidInput(value);
+    }
+
+    function isNameAvailable(name) {
+      return !names[name];
+    }
+
+    // Formatting.
+    function capitalize(string) {
+      return string[0].toUpperCase() + string.slice(1);
+    }
+
+    function formatNameInputValues() {
+      const name = elems.name.value;
+      const surname = elems.surname.value;
+
+      return `${capitalize(surname)}, ${capitalize(name)}`;
+    }
+
+    function getFilterRegex() {
+      const { value } = elems.filter;
+      const pattern = `^${value.toLowerCase()}`;
+
+      return new RegExp(pattern);
+    }
+
+    function clearInputs() {
+      elems.filter.value = "";
+      elems.name.value = "";
+      elems.surname.value = "";
+    }
+
+    function addName(name) {
+      const li = document.createElement("li");
+      const content = document.createTextNode(name);
+
+      li.append(content);
+      li.onclick = onNameClick;
+
+      names[name] = {
+        value: name,
+        elem: li,
+      };
+
+      renderNames();
+    }
+
+    function removeName() {
+      const { elem } = names[selected];
+
+      elem.onclick = null;
+      elems.listBox.removeChild(elem);
+      delete names[selected];
+
+      clearSelect();
+    }
+
+    function derenderNames() {
+      const items = elems.listBox.children;
+
+      for (let i = 0; i < items; i++) {
+        elems.listBox.removeChild(items[i]);
+      }
+    }
+
+    function renderNames() {
+      derenderNames();
+
+      Object.keys(names)
+        .sort()
+        .forEach((name) => {
+          elems.listBox.append(names[name].elem);
+        });
+    }
+
+    // Filter.
+    function clearFilterInput() {
+      elems.filter.value = "";
+    }
+
+    function clearFilteredNames() {
+      const items = document.querySelectorAll("ol#listBox > .hide");
+
+      for (let i = 0; i < items.length; i++) {
+        items[i].classList.remove("hide");
+      }
+
+      elems.filter.value = "";
+    }
+
+    function clearFilter() {
+      clearFilterInput();
+      clearFilteredNames();
+    }
+
+    // Select.
+    function select(name) {
+      clearSelect();
+      selected = name;
+      names[name].elem.classList.add(classes.selected);
+
+      elems.delete.disabled = false;
+      elems.update.disabled = false;
+    }
+
+    function clearSelect() {
+      if (!selected) {
+        return;
+      }
+
+      names[selected]?.elem.classList.remove(classes.selected);
+      elems.delete.disabled = true;
+      elems.update.disabled = true;
+    }
+
+    // DOM listeners.
+    function onNameClick(event) {
+      const name = event.target.textContent;
+      select(name);
+    }
+
+    function onCreateButtonClick() {
+      if (isValidNameInputValues()) {
+        const formatted = formatNameInputValues();
+
+        if (isNameAvailable(formatted)) {
+          addName(formatted);
+          clearInputs();
+          clearFilter();
+        }
+      }
+    }
+
+    function onDeleteClick() {
+      removeName();
+    }
+
+    function onUpdateClick() {
+      if (isValidNameInputValues()) {
+        const formatted = formatNameInputValues();
+
+        if (isNameAvailable(formatted)) {
+          removeName();
+          addName(formatted);
+          clearInputs();
+          clearFilter();
+        }
+      }
+    }
+
+    function onFilterInput() {
+      if (isValidFilterInputValue()) {
+        const items = elems.listBox.children;
+        const filter = getFilterRegex();
+
+        clearSelect();
+
+        for (let i = 0; i < items.length; i++) {
+          const elem = items[i];
+          const name = elem.textContent;
+
+          if (filter.test(name.toLowerCase())) {
+            elem.classList.remove(classes.hide);
+          } else {
+            elem.classList.add(classes.hide);
+          }
+        }
+
+        return;
+      }
+
+      clearFilteredNames();
+    }
+
+    function addEventListeners() {
+      elems.create.onclick = onCreateButtonClick;
+      elems.update.onclick = onUpdateClick;
+      elems.delete.onclick = onDeleteClick;
+      elems.filter.oninput = onFilterInput;
+    }
+
+    addEventListeners();
+  })();
+  ```
+  </StaticCodeContainer>
+
   ---
 
   ## 6. Circle Drawer 
 
-  ### Challenge
+  ### Challenge 
 
-  ### Criteria
+  Understanding the basic ideas of a language/toolkit.
+
+  ### Criteria 
+
+  With Circle Draw, we will have to build a <span class="font-bold">frame containing an undo and redo button</span>, as well as a <span class="font-bold">canvas area</span>. 
+
+  Let's take into account, however, the following requirements: 
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ Left-clicking inside an empty area inside the canvas will <span class="font-bold">create a circle with a fixed diameter</span>.
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ <span class="font-bold">Right-clicking</span> a selected circle will make a popup <span class="font-bold">"Adjust diameter" menu</span> appear.
+  
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ Clicking on <span class="font-bold">"Adjust diameter"</span> will open another frame with a <span class="font-bold">slider that adjusts the diameter</span> of the selected circle.
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ Closing this frame will mark the last diameter as <span class="font-bold">significant for the undo/redo history</span>. 
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ Clicking <span class="font-bold">undo</span> will remove the last significant change. 
+  
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ Clicking <span class="font-bold">redo</span> will reapply the last undoed change. 
+
+  Circle Drawer's goal is, among other things, to test how good the common <span class="font-bold">challenge of implementing an undo/redo functionality</span> for a GUI application can be solved. 
+  Moreover, Circle Drawer tests how <span class="font-bold">dialog control</span> (the challenge of retaining context between successive GUI operations) is achieved in the source code.
 
   <CodePreview
     sandboxId="q6xmhn"
     previewHeight="620px"
   />
 
+  If it sounds simple enough, let's get started with some <span class="font-bold">HTML and CSS</span>:
+
+  <StaticCodeContainer> 
+
+  ```html
+  index.html
+  ----------
+  // ...
+
+  <section id="circleDrawer">
+    <h1>Circle Drawer</h1>
+    <div id="body">
+      <button id="undo" disabled>UNDO</button>
+      <button id="redo" disabled>REDO</button>
+      <svg></svg>
+      <section class="hide" id="menu">
+        <button class="close" id="closeMenu" type="button">x</button>
+        <button id="openAdjustDiameter">ADJUST DIAMETER</button>
+      </section>
+      <form class="hide" id="adjustDiameter">
+        <button class="close" id="closeForm" type="button">x</button>
+        <div id="adjustDiameterBody">
+          <label for="diameter"></label>
+          <input id="diameter" type="range" step="1" min="8" max="100" />
+        </div>
+      </form>
+    </div>
+  </section>
+
+  //...
+  ```
 
   ---
 
+  ```css
+  styles.css
+  ----------
+  #circleDrawer {
+    --background-color: hsl(0, 0%, 100%);
+    --border-color: hsl(0, 0%, 13%);
+    --shadow: 0 3px 6px hsla(0, 0%, 0%, 0.16), 0 3px 6px hsla(0, 0%, 0%, 0.23); 
+    --text-color: hsl(0, 0%, 13%);
+  }
+
+  section#circleDrawer {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: var(--background-color);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+
+  #circleDrawer h1 {
+    background: var(--text-color);
+    color: var(--background-color);
+    font-size: 16px;
+    text-align: center;
+  }
+
+  #circleDrawer div#body {
+    display: grid;
+    grid:
+      "undo redo" auto
+      "svg svg" auto
+      / auto auto;
+    grid-gap: 16px;
+    padding: 16px;
+  }
+
+  #circleDrawer button#undo {
+    grid-area: undo;
+    justify-self: end;
+  }
+
+  #circleDrawer button#redo {
+    grid-area: redo;
+    justify-self: start;
+  }
+
+  #circleDrawer svg {
+    width: 360px;
+    height: 240px;
+    grid-area: svg;
+    border: 1px solid var(--text-color);
+  }
+
+  #circleDrawer svg.disabled {
+    pointer-events: none;
+  }
+
+  #circleDrawer circle:hover,
+  #circleDrawer circle.selected {
+    fill: gray;
+  }
+
+  #circleDrawer section#menu {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    bottom: 32px;
+    left: 50%;
+    border: 1px solid var(--text-color);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    transform: translateX(-50%);
+  }
+
+  #circleDrawer form#adjustDiameter {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    width: calc(100% - 16px);
+    bottom: 32px;
+    left: 50%;
+    background: var(--background-color);
+    border: 1px solid var(--text-color);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    font-size: 14px;
+    transform: translateX(-50%);
+  }
+
+  #circleDrawer div#adjustDiameterBody {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+  }
+
+  #circleDrawer button.close {
+    border-bottom: 1px solid var(--background-color);
+    font-size: 16px;
+    padding: 0;
+    padding-left: 8px;
+    text-align: left;
+  }
+
+  #circleDrawer button {
+    background: var(--text-color);
+    border: none;
+    color: var(--background-color);
+    font-size: 14px;
+    letter-spacing: 0.05em;
+    padding: 12px 24px;
+    cursor: pointer;
+  }
+
+  #circleDrawer button:disabled {
+    opacity: 0.3;
+    pointer-events: none;
+  }
+
+  #circleDrawer section#menu.hide,
+  #circleDrawer form#adjustDiameter.hide {
+    display: none;
+  }
+  ```
+  </StaticCodeContainer> 
+
+  Now, the logic behind it: 
+
+  <StaticCodeContainer>
+
+  ```js
+  index.js
+  --------
+  (function () {
+    const DEFAULT_DIAMETER = 24;
+    const SVG_NAME_SPACE = "http://www.w3.org/2000/svg";
+
+    const classes = {
+      disabled: "disabled",
+      selected: "selected",
+    };
+
+    const changes = [];
+
+    const changeTypes = {
+      circleAdded: "circleAdded",
+      diameterChange: "diameterChange",
+    };
+
+    const elems = {
+      form: document.querySelector("form#adjustDiameter"),
+      input: document.querySelector("input#diameter"),
+      label: document.querySelector("label[for='diameter']"),
+      menu: document.querySelector("section#menu"),
+      redo: document.querySelector("button#redo"),
+      svg: document.querySelector("svg"),
+      undo: document.querySelector("button#undo"),
+      closeForm: document.querySelector("button#closeForm"),
+      closeMenu: document.querySelector("button#closeMenu"),
+      openAdjustDiameter: document.querySelector("button#openAdjustDiameter"),
+    };
+
+    let selected = null;
+    let changesUndone = [];
+
+    function hide(elem) {
+      elem.classList.add("hide");
+    }
+
+    function show(elem) {
+      elem.classList.remove("hide");
+    }
+
+    function enable(elem) {
+      elem.disabled = false;
+    }
+
+    function disable(elem) {
+      elem.disabled = true;
+    }
+
+    function select(circle) {
+      circle.classList.add(classes.selected);
+      selected = {
+        circle,
+        diameter: circle.getAttribute("r") * 2,
+      };
+    }
+
+    function deselect() {
+      selected.circle.classList.remove(classes.selected);
+      selected = null;
+    }
+
+    function loadForm() {
+      const x = selected.circle.getAttribute("cx");
+      const y = selected.circle.getAttribute("cy");
+
+      elems.input.value = selected.diameter;
+      elems.label.textContent = `Adjust diameter of circle at (${x}, ${y}).`;
+
+      show(elems.form);
+    }
+
+    function disableSvg() {
+      elems.svg.classList.add(classes.disabled);
+    }
+
+    function enableSvg() {
+      elems.svg.classList.remove(classes.disabled);
+    }
+
+    // Undo / Redo.
+    function undoDiameterChange(change) {
+      const { oldDiameter } = change;
+      change.circle.setAttribute("r", oldDiameter / 2);
+    }
+
+    function redoDiameterChange(change) {
+      const { newDiameter } = change;
+      change.circle.setAttribute("r", newDiameter / 2);
+    }
+
+    function resetChangesUndone() {
+      changesUndone = [];
+      disable(elems.redo);
+    }
+
+    // Logging.
+    function logChange(change) {
+      changes.push(change);
+      enable(elems.undo);
+    }
+
+    function logCircleAdd(circle) {
+      logChange({
+        type: changeTypes.circleAdded,
+        circle,
+      });
+    }
+
+    function logDiameterChange() {
+      const newDiameter = selected.circle.getAttribute("r") * 2;
+      const oldDiameter = selected.diameter;
+
+      if (newDiameter !== oldDiameter) {
+        logChange({
+          type: changeTypes.diameterChange,
+          circle: selected.circle,
+          oldDiameter,
+          newDiameter,
+        });
+
+        resetChangesUndone();
+      }
+    }
+
+    // Circle.
+    function mouseToSvgCoords(event) {
+      const invertedSVGMatrix = elems.svg.getScreenCTM().inverse();
+      const point = elems.svg.createSVGPoint();
+
+      point.x = event.clientX;
+      point.y = event.clientY;
+
+      return point.matrixTransform(invertedSVGMatrix);
+    }
+
+    function removeCircle(circle) {
+      circle.onclick = null;
+      circle.contextmenu = null;
+
+      elems.svg.removeChild(circle);
+    }
+
+    function addCircle(circle) {
+      circle.onclick = onCircleClick;
+      circle.oncontextmenu = onCircleRightClick;
+
+      elems.svg.append(circle);
+    }
+
+    function createCircle(coords) {
+      const { x, y } = coords;
+      const circle = document.createElementNS(SVG_NAME_SPACE, "circle");
+
+      circle.setAttribute("r", DEFAULT_DIAMETER);
+      circle.setAttribute("cx", x);
+      circle.setAttribute("cy", y);
+      circle.setAttribute("fill", "transparent");
+      circle.setAttribute("stroke", "black");
+
+      return circle;
+    }
+
+    // State.
+    const states = {
+      default: "default",
+      menuOpen: "menuOpen",
+      formOpen: "formOpen",
+    };
+
+    const state = {
+      set change(value) {
+        this.value = value;
+        onStateChange(value);
+      },
+      value: states.default,
+    };
+
+    function onStateChange(state) {
+      switch (state) {
+        case states.default:
+          if (changes.length > 0) {
+            enable(elems.undo);
+          }
+          if (changesUndone.length > 0) {
+            enable(elems.redo);
+          }
+
+          enableSvg();
+          deselect();
+          hide(elems.menu);
+          hide(elems.form);
+          break;
+
+        case states.menuOpen:
+          show(elems.menu);
+          disable(elems.undo);
+          disable(elems.redo);
+          disableSvg();
+          break;
+
+        case states.formOpen:
+          break;
+
+        default:
+          throw Error(`Unknown state: ${state}`);
+      }
+    }
+
+    // DOM listeners.
+    function onSvgClick(event) {
+      const coords = mouseToSvgCoords(event);
+      const circle = createCircle(coords);
+      addCircle(circle);
+      logCircleAdd(circle);
+      resetChangesUndone();
+    }
+
+    function onCircleClick(event) {
+      event.stopPropagation();
+    }
+
+    function onCircleRightClick(event) {
+      event.preventDefault();
+      select(event.target);
+      state.change = states.menuOpen;
+    }
+
+    function onAdjustDiameterClick() {
+      loadForm();
+      hide(elems.menu);
+      state.change = states.formOpen;
+    }
+
+    function onMenuCloseClick() {
+      state.change = states.default;
+    }
+
+    function onDiameterInput(event) {
+      const { value } = event.target;
+      selected.circle.setAttribute("r", value / 2);
+    }
+
+    function onFormCloseClick() {
+      logDiameterChange();
+      state.change = states.default;
+    }
+
+    function onUndoClick() {
+      if (changes.length > 0) {
+        const change = changes.pop();
+        changesUndone.push(change);
+
+        switch (change.type) {
+          case changeTypes.circleAdded:
+            removeCircle(change.circle);
+            break;
+
+          case changeTypes.diameterChange:
+            undoDiameterChange(change);
+            break;
+
+          default:
+            throw Error(`Unknown change type: ${change.type}.`);
+        }
+      }
+
+      if (changes.length === 0) {
+        disable(elems.undo);
+      }
+
+      enable(elems.redo);
+    }
+
+    function onRedoClick() {
+      if (changesUndone.length > 0) {
+        const change = changesUndone.pop();
+        changes.push(change);
+
+        switch (change.type) {
+          case changeTypes.circleAdded:
+            addCircle(change.circle);
+            break;
+
+          case changeTypes.diameterChange:
+            redoDiameterChange(change);
+            break;
+
+          default:
+            throw Error(`Unknown change type: ${change.type}.`);
+        }
+      }
+
+      if (changesUndone.length === 0) {
+        disable(elems.redo);
+      }
+
+      enable(elems.undo);
+    }
+
+    function addEventListeners() {
+      elems.undo.onclick = onUndoClick;
+      elems.redo.onclick = onRedoClick;
+      elems.svg.onclick = onSvgClick;
+      elems.input.oninput = onDiameterInput;
+      elems.closeForm.onclick = onFormCloseClick;
+      elems.closeMenu.onclick = onMenuCloseClick;
+      elems.openAdjustDiameter.onclick = onAdjustDiameterClick;
+    }
+
+    addEventListeners();
+  })();
+  ```
+  </StaticCodeContainer>
+
+  ---
+  
   ## 7. Cells 
 
-  ### Challenge
+  ### Challenge 
 
-  ### Criteria
+  Change propagation, widget customization, implementing a more authentic/involved GUI application.
 
-   <CodePreview
+  ### Criteria 
+
+  Now, we will create a simple but usable <span class="font-bold">spreadsheet application</span>. How? Following these requirements, of course: 
+  
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ The spreadsheet should be <span class="font-bold">scrollable</span>. 
+  
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ The <span class="font-bold">rows</span> should be numbered from <span class="font-bold">0 to 99</span>, and the <span class="font-bold">columns from A to Z</span>.
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ <span class="font-bold">Double-clicking a cell</span> showing a formula's result should allow the user to <span class="font-bold">change such formula</span>.
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ After having finished editing, the <span class="font-bold">formula is parsed, evaluated</span>, and its <span class="font-bold">updated value is shown</span>. 
+
+  Cells is a more authentic task that tests if a particular approach also scales to a <span class="font-bold">somewhat bigger application</span>. The two primary GUI-related challenges are <span class="font-bold">intelligent 
+  propagation of changes</span> and <span class="font-bold">widget customization</span>. Admittedly, there is a substantial part that is not necessarily very GUI-related, but that is just the nature of a more authentic challenge! 
+  Finally, the domain-specific code should be clearly <span class="font-bold">separated from the GUI-specific code</span>, and the resulting spreadsheet widget has to be <span class="font-bold">reusable</span>.
+
+  <CodePreview
     sandboxId="fljwpf"
     previewHeight="700px"
-  />
+  /> 
+
+  Curious about how to code something similar? Let's start with the <span class="font-bold">HTML and CSS</span> wombo-combo, then: 
+
+  <StaticCodeContainer>
+
+  ```html
+  index.html
+  ----------
+  // ...
+
+  <section id="cells">
+    <h1>Cells</h1>
+    <div id="tableLayout">
+      <table>
+        <thead>
+          <tr id="colHeadings">
+            <th id="topLeftSquare" class="rowHeading"></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  //...
+  ```
+
+  ---
+
+  ```css
+  styles.css
+  ----------
+  #cells {
+    --cell-width: 120px;
+    --cell-height: 32px;
+    --row-heading-cell-width: 40px;
+
+    --background-color: hsl(0, 0%, 100%);
+    --border-color: hsl(0, 0%, 13%); 
+    --cell-border-color: hsl(0, 0%, 62%);
+    --selected-color: hsl(0, 0%, 11%);
+    --shadow: 0 3px 6px hsla(0, 0%, 0%, 0.16), 0 3px 6px hsla(0, 0%, 0%, 0.23);
+    --text-color: hsl(0, 0%, 13%);
+  }
+
+  section#cells {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    background: var(--background-color);
+    border: 1px solid var(--border-color); 
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  #cells #tableLayout {
+    position: relative;
+    width: 100%;
+    flex-grow: 1;
+    overflow: auto;
+  }
+
+  #cells h1 {
+    background: var(--text-color);
+    color: var(--background-color);
+    font-size: 16px;
+    text-align: center;
+  }
+
+  #cells table {
+    position: absolute;
+    width: calc(var(--cell-width) * 26 + var(--row-heading-cell-width));
+    top: 0;
+    left: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-style: hidden;
+  }
+
+  #cells tr {
+    height: var(--cell-height);
+  }
+
+  #cells th:not(.rowHeading) {
+    position: sticky;
+    width: var(--cell-width);
+    top: 0;
+    background: var(--background-color);
+    border: 1px solid var(--cell-border-color); 
+    z-index: 2;
+  }
+
+  #cells th.rowHeading {
+    position: sticky;
+    width: var(--row-heading-cell-width);
+    left: 0;
+    background: var(--background-color);
+    border: 1px solid var(--cell-border-color);
+    z-index: 1;
+  }
+
+  #cells #topLeftSquare {
+    top: 0; 
+    z-index: 2;
+  }
+
+  #cells td {
+    width: var(--cell-width);
+    border: 1px solid var(--cell-border-color);
+  }
+
+  #cells input {
+    width: 100%;
+    height: var(--cell-height);
+    background: transparent;
+    border: none;
+    padding: 0 4px;
+  }
+
+  #cells input:focus {
+    outline: none;
+    outline: 2px solid var(--selected-color);
+  }
+  ```
+  </StaticCodeContainer> 
+
+  And the <span class="font-bold">JavaScript chunk of code</span>: 
+
+  <StaticCodeContainer>
+
+  ```js
+  index.js
+  --------
+  (function () {
+    let selected = null;
+  
+    const letters = [
+      `A`, `B`, `C`, `D`, `E`, `F`, `G`, `H`, `I`, `J`, `K`, `L`, `M`, `N`, `O`,
+      `P`, `Q`, `R`, `S`, `T`, `U`, `V`, `W`, `X`, `Y`, `Z`,
+    ];
+    const ROW_COUNT = 100;
+    const FORMULA_SYMBOL = `=`;
+    const ERROR = "error";
+  
+    const classes = {
+      rowHeading: "rowHeading",
+    };
+  
+    const keyCodes = {
+      enter: 13,
+      escape: 27,
+    };
+  
+    const cells = {};
+  
+    const elems = {
+      colHeadingsRow: document.querySelector("#cells tr#colHeadings"),
+      table: document.querySelector("#cells table"),
+      tBody: document.querySelector("#cells tbody"),
+    };
+  
+    function getCellValue(id) {
+      const value = cells[id]?.computedValue;
+      return value === undefined ? "" : value;
+    }
+  
+    function isCellId(symbol) {
+      const regex = new RegExp(/^([A-Za-z])([0-9]{1,2})$/);
+      return regex.test(symbol);
+    }
+  
+    function recalcCell(id) {
+      const formula = cells[id]?.formula;
+  
+      if (!formula) {
+        return;
+      }
+  
+      let computedValue;
+  
+      try {
+        const value = evaluateFormula(formula);
+        computedValue = value;
+      } catch (error) {
+        computedValue = ERROR;
+      }
+  
+      cells[id] = {
+        ...cells[id],
+        computedValue,
+      };
+  
+      cells[id].elem.value = computedValue;
+  
+      cells[id].children?.forEach((id) => {
+        recalcCell(id);
+      });
+    }
+
+    // Children.
+    function addChild(parentId, childId) {
+      const children = cells[parentId]?.children || [];
+  
+      if (children.includes(childId)) {
+        return;
+      }
+  
+      children.push(childId);
+  
+      cells[parentId] = {
+        ...cells[parentId],
+        children,
+      };
+    }
+  
+    function removeChild(parentId, childId) {
+      const children = cells[parentId]?.children || [];
+  
+      if (!children.includes(childId)) {
+        return;
+      }
+  
+      cells[parentId].children = children.filter((id) => id !== childId);
+    }
+  
+    function removeCellParents(id) {
+      const formula = cells[id]?.formula;
+  
+      if (!formula) {
+        return;
+      }
+  
+      getFormulaParents(formula).forEach((parentId) => {
+        removeChild(parentId, id);
+      });
+    }
+  
+    function recalcChildren(id) {
+      cells[id]?.children?.forEach((childId) => {
+        recalcCell(childId);
+      });
+    }
+
+    // Formula.
+    function isFormula(value) {
+      return value.startsWith(FORMULA_SYMBOL);
+    }
+  
+    function splitFormula(formula) {
+      return formula
+        .replace(/\s+/g, "")
+        .split(/(=|\+|\-|\*|\/|\(|\)|,)/)
+        .filter((char) => char !== "");
+    }
+  
+    function expandRange(range) {
+      const [start, end] = range.split(":");
+      const startLetter = start.charAt(0);
+      const startRow = parseInt(start.slice(1), 10);
+      const endLetter = end.charAt(0);
+      const endRow = parseInt(end.slice(1), 10);
+      const values = [];
+  
+      for (
+        let letter = startLetter.charCodeAt(0);
+        letter <= endLetter.charCodeAt(0);
+        letter++
+      ) {
+        for (let row = startRow; row <= endRow; row++) {
+          const cellId = String.fromCharCode(letter) + row;
+          const cellValue = getCellValue(cellId);
+          const numericValue = parseFloat(cellValue);
+          if (!isNaN(numericValue)) {
+            values.push(numericValue);
+          }
+        }
+      }
+      return values;
+    }
+  
+    function evaluateFormula(formula) {
+      const [firstSymbol, ...rest] = splitFormula(formula);
+  
+      if (firstSymbol !== FORMULA_SYMBOL) {
+        throw new Error("Invalid formula");
+      }
+  
+      const formulaWithValues = rest.map((symbol) => {
+        if (isCellId(symbol)) {
+          return getCellValue(symbol);
+        } else if (["SUM", "SUBTRACT", "MULTIPLY", "DIVIDE"].includes(symbol.toUpperCase())) {
+          return symbol.toUpperCase();
+        } else if (symbol.match(/^[A-Za-z][0-9]{1,2}:[A-Za-z][0-9]{1,2}$/)) {
+          return expandRange(symbol);
+        }
+        return symbol;
+      });
+  
+      return processCustomFunctions(formulaWithValues);
+    }
+  
+    function processCustomFunctions(formulaWithValues) {
+      let operator = null;
+      let stack = [];
+  
+      formulaWithValues.forEach(symbol => {
+        if (["SUM", "SUBTRACT", "MULTIPLY", "DIVIDE"].includes(symbol)) {
+          operator = symbol;
+        } else if (Array.isArray(symbol)) {
+          stack.push(...symbol);
+        } else if (!isNaN(symbol)) {
+          stack.push(parseFloat(symbol));
+        }
+      });
+  
+      stack = stack.filter(value => !isNaN(value));
+  
+      if (operator === "SUM") {
+        return stack.reduce((a, b) => a + b, 0);
+      } else if (operator === "SUBTRACT") {
+        return stack.reduce((a, b) => a - b);
+      } else if (operator === "MULTIPLY") {
+        return stack.reduce((a, b) => a * b, 1);
+      } else if (operator === "DIVIDE") {
+        return stack.reduce((a, b) => a / b);
+      }
+  
+      return stack[0] || "";
+    }
+  
+    function getFormulaParents(formula) {
+      return splitFormula(formula).filter((symbol) => isCellId(symbol));
+    }
+
+    // Handling different inputs.
+    function handleEmptyInput(elem) {
+      const { id } = elem;
+  
+      removeCellParents(id);
+  
+      cells[id] = {
+        ...cells[id],
+        formula: null,
+        computedValue: null,
+      };
+  
+      recalcChildren(id);
+    }
+  
+    function handleFormulaInput(elem, formula) {
+      let computedValue;
+      const { id } = elem;
+      removeCellParents(id);
+  
+      try {
+        const value = evaluateFormula(formula);
+        const parents = getFormulaParents(formula);
+  
+        computedValue = value;
+        parents.forEach((parentId) => {
+          addChild(parentId, id);
+        });
+      } catch (error) {
+        computedValue = ERROR;
+      }
+  
+      cells[id] = {
+        ...cells[id],
+        computedValue,
+        elem,
+        formula,
+      };
+  
+      elem.value = computedValue;
+      recalcChildren(id);
+    }
+  
+    function handleNumberInput(elem, number) {
+      const { id } = elem;
+  
+      removeCellParents(id);
+  
+      cells[id] = {
+        ...cells[id],
+        computedValue: number,
+        formula: null,
+      };
+  
+      recalcChildren(id);
+    }
+  
+    function parseInput(elem) {
+      const { id, value: newValue } = elem;
+      const oldValue = cells[id]?.formula || cells[id]?.computedValue;
+  
+      if (newValue === "" && !oldValue) {
+        return;
+      }
+  
+      if (newValue === oldValue) {
+        elem.value = cells[id].computedValue;
+        return;
+      }
+  
+      if (newValue === "") {
+        handleEmptyInput(elem);
+      } else if (isFormula(newValue)) {
+        handleFormulaInput(elem, newValue);
+      } else {
+        handleNumberInput(elem, newValue);
+      }
+    }
+
+    // DOM manipulation.
+    function setReadOnly(elem) {
+      elem.setAttribute("readonly", "readonly");
+    }
+  
+    function removeReadOnly(elem) {
+      elem.removeAttribute("readonly");
+    }
+
+    // DOM listeners.
+    function onDoubleClick(event) {
+      const elem = event.target;
+      selected = elem;
+      const formula = cells[elem.id]?.formula;
+  
+      removeReadOnly(elem);
+  
+      if (formula) {
+        elem.value = formula;
+      }
+    }
+  
+    function onBlur(event) {
+      const elem = event.target;
+  
+      if (elem === selected) {
+        parseInput(elem);
+        setReadOnly(elem);
+        selected = null;
+      }
+    }
+  
+    function onKeyUp(event) {
+      if (Object.values(keyCodes).includes(event.keyCode)) {
+        onBlur(event);
+      }
+    }
+
+    // Rendering.
+    function renderColHeadings() {
+      letters.forEach((letter) => {
+        const th = document.createElement("th");
+  
+        th.textContent = letter;
+        elems.colHeadingsRow.append(th);
+      });
+    }
+  
+    function renderRows() {
+      Array(ROW_COUNT)
+        .fill(undefined)
+        .forEach((_, i) => {
+          const tr = document.createElement("tr");
+          const th = document.createElement("th");
+  
+          th.textContent = `${i}`;
+          th.classList.add(classes.rowHeading);
+          tr.append(th);
+  
+          letters.forEach((letter) => {
+            const td = document.createElement("td");
+            const input = document.createElement("input");
+  
+            input.id = `${letter}${i}`;
+            input.setAttribute("readonly", "readonly");
+            input.addEventListener("dblclick", onDoubleClick);
+            input.addEventListener("blur", onBlur);
+            input.addEventListener("keyup", onKeyUp);
+  
+            td.append(input);
+            tr.append(td);
+          });
+  
+          elems.tBody.append(tr);
+        });
+    }
+  
+    function render() {
+      renderColHeadings();
+      renderRows();
+    }
+  
+    render();
+  })();
+  ```
+
+  </StaticCodeContainer>
+  
+  As for the <span class="font-bold">possible formulas</span>, here's some insight on it (note that `,` implies <span class="font-bold">two specific cells</span>, while `:` implies 
+  <span class="font-bold">an entire range of them</span>):
 
   <div class="table-container">
   | Formula   | Example             | Description                             |
@@ -945,14 +2385,8 @@ import StaticCodeContainer from "../../components/StaticCodeContainer.astro";
   | Subtract  | `=SUBTRACT(A2, B2)` | Subtracts one value from another.       |
   | Multiply  | `=MULTIPLY(A2, B2)` | Multiplies two values.                  |
   | Divide    | `=DIVIDE(A2, B2)`   | Divides one value by another.           |
-</div>
+  </div>
 
-
-  ---
-
-
-  <StaticCodeContainer>
-
-  </StaticCodeContainer>
+  Feel free to share with me your own version of the 7GUIs - and <span class="font-bold">happy coding</span>! 🚀
 
 </div>
