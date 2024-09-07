@@ -339,9 +339,7 @@ import StaticCodeContainer from "../../components/StaticCodeContainer.astro";
 
   &nbsp;&nbsp;&nbsp;&nbsp;▪ The return textfield is <span class="font-bold">enabled</span> if the combobox’s value is “return flight”.
 
-  &nbsp;&nbsp;&nbsp;&nbsp;▪ When the “return flight” <span class="font-bold">date is strictly before time</span>, it's not possible to submit.
-
-  &nbsp;&nbsp;&nbsp;&nbsp;▪ When there is a <span class="font-bold">wrong-formatted date</span>, then it is colored red and the submit button is disabled.
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ When the “return flight” <span class="font-bold">date is strictly before time</span> or <span class="font-bold">wrong-formatted</span>, it's not possible to submit.
 
   &nbsp;&nbsp;&nbsp;&nbsp;▪ When submitting, <span class="font-bold">a message is displayed</span> informing the user of their selection.
   
@@ -661,14 +659,244 @@ import StaticCodeContainer from "../../components/StaticCodeContainer.astro";
 
   ## 4. Timer 
 
-  ### Challenge
+  ### Challenge 
+
+  Concurrency, competing user/signal interactions, responsiveness.
 
   ### Criteria
+
+  In this case, we have to build a frame containing <span class="font-bold">a gauge for an elapsed time</span>. 
+  It will incorporate:
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ A <span class="font-bold">label</span> which shows the elapsed time as a <span class="font-bold">numerical value</span>.
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ A <span class="font-bold">slider</span> by which the duration of the timer <span class="font-bold">can be adjusted while the timer is running</span>.
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ A <span class="font-bold">reset button</span>.
+
+  When it comes to certain functionalities, we can't forget that:
+
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ Adjusting the slider must immediately reflect on the duration and gauge.
+  
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ When the <span class="font-bold">elapsed time ≥ duration</span>, the timer <span class="font-bold">stops</span> (full gauge). 
+  
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ If the duration is increased (meaning that duration > elapsed time), the timer <span class="font-bold">starts to tick until elapsed time ≥ duration again</span>.
+  
+  &nbsp;&nbsp;&nbsp;&nbsp;▪ Clicking the reset button will <span class="font-bold">reset the elapsed time to zero</span>.
+
+  Timer deals with concurrency in the sense that a timer process that updates the elapsed time runs concurrently to the user's interactions 
+  with the GUI application. Also, the fact that the slider adjustments must be reflected immediately tests the responsiveness of the solution, 
+  forcing us to make it clear that the signal is a timer tick.
 
   <CodePreview
     sandboxId="g4s5s2"
     previewHeight="450px"
   />
+
+  As always, let's try it with not much scaffolding involved. <span class="font-bold">HTML and CSS time</span>: 
+
+  <StaticCodeContainer> 
+
+  ```html
+  index.html
+  ----------
+  // ...
+
+  <section id="timer">
+    <h1>Timer</h1>
+    <div id="body">
+      <section id="gauge">
+        Elapsed Time:
+        <progress value="0" max="100">0%</progress>
+      </section>
+      <output id="durationOutput">0s</output>
+      <form>
+        <div class="duration">
+          <label for="durationInput">Duration:</label>
+          <input id="durationInput" max="100" min="0" step="1" type="range" value="0" />
+        </div>
+        <button type="button">RESET</button>
+      </form>
+    </div>
+  </section>
+
+  //...
+  ```
+
+  ---
+
+  ```css
+  styles.css
+  ----------
+  #timer {
+    --background-color: hsl(0, 0%, 100%);
+    --border-color: hsl(0, 0%, 13%);
+    --shadow: 0 3px 6px hsla(0, 0%, 0%, 0.16), 0 3px 6px hsla(0, 0%, 0%, 0.23);
+    --text-color: hsl(0, 0%, 13%);
+  }
+
+  section#timer {
+    display: flex;
+    flex-direction: column;
+    background: var(--background-color);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+
+  #timer h1 {
+    background: var(--text-color);
+    color: var(--background-color);
+    font-size: 16px;
+    text-align: center;
+  }
+
+  #timer div#body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px;
+  }
+
+  #timer section#gauge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  #timer div.duration {
+    display: flex;
+  }
+
+  #timer form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  #timer input {
+    flex-grow: 1;
+    margin-left: 16px;
+    cursor: pointer;
+  }
+
+  #timer button {
+    background: var(--text-color);
+    color: var(--background-color);
+    border: none;
+    font-size: 14px;
+    letter-spacing: 0.05em;
+    padding: 12px 24px;
+    cursor: pointer;
+  }
+  ```
+  </StaticCodeContainer>
+
+  Now, let's check the <span class="font-bold">JavaScript implications</span>: 
+
+  <StaticCodeContainer>
+
+  ```js
+  index.js
+  --------
+  let intervalID = null;
+
+  const STEP_MS = 100;
+
+  const elems = {
+    durationInput: document.querySelector("#durationInput"),
+    durationOutput: document.querySelector("#durationOutput"),
+    progress: document.querySelector("progress"),
+    reset: document.querySelector("button"),
+  };
+
+  // Displaying values.
+  function setDurationDisplay() {
+    const { elapsedTimeMS } = values;
+    const currentValue = elems.durationOutput.textContent;
+    const newValue = `${elapsedTimeMS / 1000}s`;
+
+    if (currentValue !== newValue) {
+      elems.durationOutput.textContent = newValue;
+    }
+  }
+
+  function setProgressDisplay() {
+    const { durationMS, elapsedTimeMS } = values;
+    const currentValue = elems.progress.value;
+    const newValue = durationMS === 0 ? 0 : Math.min(elapsedTimeMS / durationMS, 1) * 100;
+
+    if (currentValue !== newValue) {
+      elems.progress.value = newValue;
+      elems.progress.textContent = `${newValue}%`;
+    }
+  }
+
+  function setDisplayValues() {
+    setDurationDisplay();
+    setProgressDisplay();
+  }
+
+  // Values.
+  function onValuesChange() {
+    const { durationMS, elapsedTimeMS } = values;
+
+    setDisplayValues();
+
+    if (elapsedTimeMS >= durationMS) {
+      stopTimer();
+      return;
+    }
+
+    startTimer();
+  }
+
+  const values = {
+    set durationMS(value) {
+      this._durationMS_ = value;
+      onValuesChange();
+    },
+    set elapseTimeMS(value) {
+      this._elapsedTimeMS_ = value;
+      onValuesChange();
+    },
+    get durationMS() {
+      return this._durationMS_ || 0;
+    },
+    get elapsedTimeMS() {
+      return this._elapsedTimeMS_ || 0;
+    },
+  };
+
+  // Timer.
+  function stopTimer() {
+    if (intervalID) {
+      clearInterval(intervalID);
+      intervalID = null;
+    }
+  }
+
+  function startTimer() {
+    if (!intervalID) {
+      intervalID = setInterval(() => {
+        const { elapsedTimeMS } = values;
+
+        values.elapseTimeMS = elapsedTimeMS + STEP_MS;
+      }, STEP_MS);
+    }
+  }
+
+  // DOM listeners.
+  elems.durationInput.oninput = function (event) {
+    const { value } = event.target;
+    values.durationMS = value * 1000;
+  };
+
+  elems.reset.onclick = function () {
+    values.elapseTimeMS = 0;
+  };
+  ```
+  </StaticCodeContainer>
 
   ---
 
