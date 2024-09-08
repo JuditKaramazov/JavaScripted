@@ -404,7 +404,6 @@ If we pay attention to our [src/layouts/Layout.astro](src/layouts/Layout.astro):
 
 ```astro
 ---
----
 import "../styles/globals.css";
 export interface Props {
   title: string;
@@ -497,14 +496,14 @@ It took time. Moreover, this project forced me to play ["Tumbling Lights", by Th
 
 These `tumbling lights` also imply the presence (even though you might call it an absence) of [AuNedelec](@AuNedelec) throughout the entire process, always encouraging me and letting me know that my head wanted to betray me. Perhaps we didn't get to explicitly collaborate this time, but deep inside, you have always been the best collaborator I ever had.
 
-Thank you kindly - and bear in mind that I'll surely keep you occupied with my little apps and projects in Grenoble!
+Thank you kindly - and bear in mind that I'll surely keep you occupied with my little apps and projects in Grenoble! 🫂
 
 ---
 
 
 ## 🙌 Immense thanks to them awesome Sponsors
 
-**Los jugadores son mis amigos**. Now, I refuse to start writing this section in a different tone, but now that one-of-my-favorite-quotes has been said... let's intone a loud and sincere: `Thank you 🫂`. 
+**Los jugadores son mis amigos**. Now, I refuse to start writing this section in a different tone, but now that one-of-my-favorite-quotes has been said... let's intone a loud and sincere: `Thank you ❤️`. 
 
 To our amazing Sponsor, `@Entreprises LEMRHALI`, `thank you so much`, and _sorry_ for not being physically there now that things feel so overwhelming and harsh. However, let me quote a character that I found extremely touching (yes, the one you have in mind, you little wizard):
 
