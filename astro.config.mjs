@@ -6,7 +6,7 @@ import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 
 export default defineConfig({
-  site: "https://javascripted.vercel.app",
+  site: "https://javascript-ed.vercel.app",
   trailingSlash: "never",
   integrations: [react(), tailwind(), mdx(), sitemap()],
   output: "static",
