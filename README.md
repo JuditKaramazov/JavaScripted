@@ -404,6 +404,7 @@ If we pay attention to our [src/layouts/Layout.astro](src/layouts/Layout.astro):
 
 ```astro
 ---
+---
 import "../styles/globals.css";
 export interface Props {
   title: string;
@@ -430,7 +431,7 @@ const url =
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -439,24 +440,25 @@ const url =
     <meta name="msapplication-TileColor" content="#da532c">
     <meta name="theme-color" content="#ffffff">
     <meta name="generator" content={Astro.generator} />
-    <meta name="google-site-verification" content="QabE4pgOKR5rQ45trqzVGARIOV6c3OB0FW_ZBUJtQqQ" />
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="author" content="Judit Lázaro Moyano" />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta content="@v_karamazov" name="twitter:site" />
-    <meta content="@v_karamazov" name="twitter:creator" />
+    <meta name="twitter:site" content="@v_karamazov" />
+    <meta name="twitter:creator" content="@v_karamazov" />
     <meta
       content={description}
       name="twitter:description"
       property="og:description"
     />
-    <meta content={url} property="og:url" />
-    <meta content={url} property="twitter:url" />
-    <meta content={title} name="twitter:title" property="og:title" />
-    <meta content={ogImage} property="og:image" />
-    <meta content={ogImage} name="twitter:image" />
+    <meta name="twitter:title" property="og:title" content={title} />
+    <meta property="twitter:url" content={url} />
+    <meta name="twitter:image" content={ogImage.href} />
+    <meta property="og:url" content={url} />
+    <meta property="og:title" content={title} />
+    <meta property="og:image" content={ogImage.href} />
+    <meta property="og:description" content={description} />
     <link rel="canonical" href={url} />
 
     // ...
