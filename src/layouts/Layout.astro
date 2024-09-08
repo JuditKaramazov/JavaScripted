@@ -25,7 +25,7 @@ const url =
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -40,18 +40,20 @@ const url =
     <meta name="author" content="Judit Lázaro Moyano" />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta content="@v_karamazov" name="twitter:site" />
-    <meta content="@v_karamazov" name="twitter:creator" />
+    <meta name="twitter:site" content="@v_karamazov" />
+    <meta name="twitter:creator" content="@v_karamazov" />
     <meta
       content={description}
       name="twitter:description"
       property="og:description"
     />
-    <meta content={url} property="og:url" />
-    <meta content={url} property="twitter:url" />
-    <meta content={title} name="twitter:title" property="og:title" />
-    <meta content={ogImage.href} property="og:image" />
-    <meta content={ogImage.href} name="twitter:image" />
+    <meta name="twitter:title" property="og:title" content={title} />
+    <meta property="twitter:url" content={url} />
+    <meta name="twitter:image" content={ogImage.href} />
+    <meta property="og:url" content={url} />
+    <meta property="og:title" content={title} />
+    <meta property="og:image" content={ogImage.href} />
+    <meta property="og:description" content={description} />
     <link rel="canonical" href={url} />
     <link
       rel="preload"
