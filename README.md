@@ -145,7 +145,7 @@ If it was helpful for me, perhaps it could be useful for someone else, right?
 ![JavaScripted screenshot.](https://github.com/user-attachments/assets/fd799197-5e43-4bda-9fee-7f8eb3e1467b)
 
 
-As some of you probably know, I started a multilayered project focused on a very simple idea: Sharing legally and freely for better learning _must_ be a priority, as the lack of universal access to effective educational resources remains a global problem. Inevitably, although I already wrote chapters and chapters discussing online websites, books, lists of free, online, and certified learning resources, or courses and cheatsheets that I myself prepared, I _had_ to find some space for the language that _started it all_ before Python put several concepts in their right place: **JavaScript**.
+As some of you probably know, I started a multilayered project focused on a very simple idea: Sharing legally and freely for better learning _must_ be a priority, as the lack of universal access to effective educational resources remains a global problem. Inevitably, although I already wrote chapters and chapters discussing online websites, books, lists of free, online, and certified learning resources, or courses and cheatsheets that I myself prepared, I _had_ to find some space for the language that _started it all_ before Python put several concepts in their rightful place: **JavaScript**.
 
 That's why [JavaScripted](https://javascript-ed.vercel.app) exists: "Once a teacher, always a teacher", and this **modern collection of JavaScript notes on several topics** totally communicates this teacher mindset I can't get rid of. 
 
