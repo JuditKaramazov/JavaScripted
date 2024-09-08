@@ -277,6 +277,7 @@ As an example of the integration, let's check what happened in the `.mdx file` r
 name: Scopes
 rank: 4
 tagline: Scope refers to the context in which variables are declared and can be accessed.
+ogImage: scopes
 sandboxId: rxpfnn
 previewHeight: 500px
 relatedLesson:
