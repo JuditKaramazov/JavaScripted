@@ -385,16 +385,16 @@ Feel free to check them now that the family's getting bigger! And don't forget t
 
 This might surprise some of you, but no: I am not a maniac, and yes: **I do care** about your privacy. 
 
-That's why, and as you'll see if you decide to check this site's [Layout.astro](/src/layouts/Layout.astro), I decided to implement [Plausible](https://plausible.io/), a lightweight, open-source, and privacy-focused website analytics tool. Long story short, it provides you with insights about your website traffic (such as page views, referral sources, and visitor behavior) while prioritizing user privacy, which means:
+That's why, and as you'll see if you decide to check this site's [Layout.astro](/src/layouts/Layout.astro), I decided to implement [Umami](https://umami.is/), a lightweight, simple, open-source, and privacy-focused analytics solution. Long story short, it provides you with insights about your website traffic (such as page views, referral sources, and visitor behavior) while prioritizing user privacy, which means:
 
-- **No cookies**, guys (if we were talking about real ones, I would understand some sadness). Plausible is **GDPR (General Data Protection Regulation)**, **CCPA (California Consumer Privacy Act)**, and **PECR (Privacy and Electronic Communications Regulations)** compliant by default. This leads to...
+- **No cookies**, guys (if we were talking about real ones, I would understand some sadness). Umami is **GDPR (General Data Protection Regulation)**, **CCPA (California Consumer Privacy Act)**, and **PECR (Privacy and Electronic Communications Regulations)** compliant by default. This leads to...
 
 - **No tracking consent banners needed**.
 
 - **No personal data collection**.
 
 > [!TIP]
-> If you are looking for some transparency and ethical alternatives to big tech while having a minimal impact on website performance, I suggest you try! Don't forget to [read their documentation](https://plausible.io/docs) first, though. That's always essential.
+> If you are looking for some transparency and ethical alternatives to big tech while having a minimal impact on website performance, I suggest you try! Don't forget to [read their documentation](https://umami.is/docs) first, though. That's always essential.
 
 ### 🤝 SEO-friendly
 
